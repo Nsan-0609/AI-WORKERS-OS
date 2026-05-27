@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI WORKERS OS β版 | ひとりビジネスをAIチームで動かす</title>
+  <meta name="description" content="ジャンルを入力するだけで、AI社員が商品設計・SNS投稿・販売導線を生成するβ版デモサイト。" />
+  <style>
+    :root {
+      --bg: #050612;
+      --panel: rgba(18, 22, 48, 0.62);
+      --panel2: rgba(9, 13, 33, 0.82);
+      --line: rgba(149, 121, 255, 0.35);
+      --text: #f5f7ff;
+      --muted: #a9b2d6;
+      --subtle: #6f78a8;
+      --cyan: #49e6ff;
+      --purple: #a36bff;
+      --pink: #ff5eea;
+      --green: #6dffb8;
+      --yellow: #ffe27a;
+      --danger: #ff6d91;
+      --shadow: 0 0 45px rgba(95, 89, 255, 0.22);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 5%, rgba(80, 78, 255, 0.22), transparent 32%),
+        radial-gradient(circle at 85% 15%, rgba(255, 71, 224, 0.18), transparent 26%),
+        radial-gradient(circle at 50% 100%, rgba(40, 225, 255, 0.12), transparent 35%),
+        var(--bg);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0.18));
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 0%, rgba(73,230,255,0.05) 50%, transparent 100%);
+      transform: translateX(-100%);
+      animation: scan 8s infinite linear;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    @keyframes scan {
+      0% { transform: translateX(-130%); }
+      100% { transform: translateX(130%); }
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 26px 0 10px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: linear-gradient(to bottom, rgba(5,6,18,0.86), rgba(5,6,18,0.35));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+    }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple), var(--pink));
+      box-shadow: 0 0 24px rgba(73,230,255,0.42);
+      position: relative;
+    }
+
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(255,255,255,0.9);
+      border-radius: 8px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .nav-links a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .btn {
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.22s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      text-decoration: none;
+      user-select: none;
+      font-size: 14px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(73,230,255,0.55);
+      box-shadow: 0 0 28px rgba(73,230,255,0.18);
+    }
+
+    .btn-primary {
+      border: 0;
+      background: linear-gradient(135deg, var(--cyan), var(--purple), var(--pink));
+      box-shadow: 0 0 34px rgba(163,107,255,0.35);
+      color: #fff;
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.045);
+    }
+
+    .hero {
+      padding: 72px 0 34px;
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap: 34px;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(73,230,255,0.28);
+      background: rgba(73,230,255,0.08);
+      color: #dffbff;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      margin-bottom: 18px;
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 16px var(--green);
+      animation: pulse 1.4s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.8); opacity: 0.6; }
+      50% { transform: scale(1.35); opacity: 1; }
+    }
+
+    h1 {
+      font-size: clamp(42px, 7vw, 86px);
+      line-height: 0.98;
+      letter-spacing: -0.075em;
+      margin: 0 0 18px;
+    }
+
+    .grad {
+      background: linear-gradient(135deg, #fff, #bff8ff 28%, #caa9ff 62%, #ff9ef4);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: clamp(16px, 2vw, 20px);
+      line-height: 1.9;
+      margin: 0 0 25px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .mini-note {
+      color: var(--subtle);
+      font-size: 12px;
+      margin-top: 14px;
+      line-height: 1.7;
+    }
+
+    .terminal {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(21,25,55,0.72), rgba(8,10,25,0.78));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .terminal::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(73,230,255,0.12), transparent 36%);
+      pointer-events: none;
+    }
+
+    .terminal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.18);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+    }
+
+    .dots {
+      display: flex;
+      gap: 7px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--subtle);
+    }
+
+    .dot:nth-child(1) { background: #ff5f77; }
+    .dot:nth-child(2) { background: #ffcc66; }
+    .dot:nth-child(3) { background: #57ffab; }
+
+    .terminal-body {
+      padding: 18px;
+      position: relative;
+    }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .agent-card {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 13px;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.045);
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .agent-card.active {
+      border-color: rgba(73,230,255,0.55);
+      box-shadow: inset 0 0 24px rgba(73,230,255,0.08), 0 0 22px rgba(73,230,255,0.12);
+    }
+
+    .agent-card.done {
+      border-color: rgba(109,255,184,0.36);
+    }
+
+    .agent-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(73,230,255,0.22), rgba(163,107,255,0.22));
+      border: 1px solid rgba(255,255,255,0.12);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      color: #eafcff;
+      box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
+    }
+
+    .agent-name {
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .agent-desc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .agent-status {
+      color: var(--subtle);
+      font-size: 11px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.055);
+      white-space: nowrap;
+    }
+
+    .agent-card.active .agent-status {
+      color: #041018;
+      background: var(--cyan);
+      box-shadow: 0 0 18px rgba(73,230,255,0.45);
+    }
+
+    .agent-card.done .agent-status {
+      color: #06180f;
+      background: var(--green);
+    }
+
+    .section {
+      padding: 48px 0;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 48px);
+      letter-spacing: -0.05em;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      line-height: 1.8;
+      margin: 0;
+      max-width: 560px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(18,22,48,0.68), rgba(8,10,25,0.70));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .form-panel {
+      padding: 18px;
+      position: sticky;
+      top: 92px;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: #dfe6ff;
+      font-weight: 800;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    label span {
+      color: var(--subtle);
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.11);
+      background: rgba(2,5,18,0.68);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 13px 14px;
+      outline: none;
+      transition: 0.2s ease;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 88px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(73,230,255,0.6);
+      box-shadow: 0 0 0 4px rgba(73,230,255,0.10);
+    }
+
+    .full {
+      width: 100%;
+      margin-top: 4px;
+      min-height: 48px;
+    }
+
+    .progress {
+      height: 10px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 16px 0 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
+      transition: width 0.45s ease;
+      box-shadow: 0 0 18px rgba(73,230,255,0.5);
+    }
+
+    .system-log {
+      color: var(--muted);
+      min-height: 22px;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+
+    .result-panel {
+      padding: 18px;
+      min-height: 640px;
+    }
+
+    .result-empty {
+      display: grid;
+      place-items: center;
+      min-height: 560px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed rgba(255,255,255,0.16);
+      border-radius: 18px;
+      padding: 22px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .result-empty strong {
+      color: var(--text);
+      font-size: 20px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .output-block {
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.045);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .output-block::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(var(--cyan), var(--purple), var(--pink));
+    }
+
+    .output-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .output-head h3 {
+      margin: 0;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .copy-small {
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .copy-small:hover {
+      color: var(--text);
+      border-color: rgba(73,230,255,0.45);
+    }
+
+    .output-content {
+      color: #e9edff;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      font-size: 14px;
+    }
+
+    .cards3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .feature {
+      padding: 20px;
+      min-height: 180px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature::after {
+      content: "";
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      right: -40px;
+      top: -40px;
+      background: radial-gradient(circle, rgba(73,230,255,0.15), transparent 68%);
+    }
+
+    .feature .num {
+      color: var(--cyan);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .feature h3 {
+      margin: 0 0 10px;
+      font-size: 19px;
+    }
+
+    .feature p {
+      color: var(--muted);
+      line-height: 1.8;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .pricing {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .price-card {
+      padding: 22px;
+      position: relative;
+    }
+
+    .price-card.featured {
+      border-color: rgba(73,230,255,0.48);
+      box-shadow: 0 0 44px rgba(73,230,255,0.18);
+    }
+
+    .price-card h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .price {
+      font-size: 34px;
+      font-weight: 950;
+      letter-spacing: -0.05em;
+      margin: 14px 0;
+    }
+
+    .price small {
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0;
+    }
+
+    .price-card ul {
+      margin: 14px 0 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      line-height: 2;
+      font-size: 14px;
+    }
+
+    .price-card li::before {
+      content: "✓";
+      color: var(--green);
+      margin-right: 8px;
+      font-weight: 900;
+    }
+
+    footer {
+      padding: 38px 0 60px;
+      color: var(--subtle);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: rgba(7, 11, 28, 0.92);
+      border: 1px solid rgba(73,230,255,0.35);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.22s ease;
+      z-index: 100;
+      font-size: 13px;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 920px) {
+      .hero, .app-grid, .cards3, .pricing {
+        grid-template-columns: 1fr;
+      }
+      .form-panel {
+        position: static;
+      }
+      .section-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .nav-links {
+        display: none;
+      }
+      .hero {
+        padding-top: 46px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .wrap {
+        width: min(100% - 20px, 1180px);
+      }
+      header {
+        padding-top: 16px;
+      }
+      .btn {
+        width: 100%;
+      }
+      .hero-actions .btn {
+        width: 100%;
+      }
+      .agent-card {
+        grid-template-columns: 38px 1fr;
+      }
+      .agent-status {
+        grid-column: 2;
+        justify-self: start;
+      }
+      .terminal-body, .form-panel, .result-panel {
+        padding: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <div class="logo">
+        <div class="logo-mark" aria-hidden="true"></div>
+        <span>AI WORKERS OS</span>
+      </div>
+      <nav class="nav-links" aria-label="主要ナビゲーション">
+        <a href="#app">β版を試す</a>
+        <a href="#features">機能</a>
+        <a href="#pricing">料金案</a>
+      </nav>
+      <a href="#app" class="btn btn-primary">AI社員を起動</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="wrap hero">
+      <div>
+        <div class="badge"><span class="pulse"></span> β DEMO / NO API VERSION</div>
+        <h1><span class="grad">ひとりビジネスを、</span><br />AIチームで動かす。</h1>
+        <p class="lead">
+          ジャンルを入力するだけで、5人のAI社員が商品設計・SNS投稿・販売ページ・CTA・30日投稿プランまでまとめて生成する次世代型デモサイトです。
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#app">無料で試す</a>
+          <a class="btn btn-ghost" href="#features">仕組みを見る</a>
+        </div>
+        <p class="mini-note">
+          ※このβ版はAPIを使わず、ブラウザだけで動くデモです。公開後にAI API・ログイン・保存・決済機能を追加できます。
+        </p>
+      </div>
+
+      <div class="terminal" aria-label="AI社員ダッシュボード">
+        <div class="terminal-head">
+          <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <span>WORKER STATUS</span>
+        </div>
+        <div class="terminal-body">
+          <div class="agent-grid" id="heroAgents">
+            <div class="agent-card active"><div class="agent-icon">R</div><div><div class="agent-name">Research Agent</div><div class="agent-desc">市場・需要・競合を整理</div></div><div class="agent-status">分析中</div></div>
+            <div class="agent-card"><div class="agent-icon">P</div><div><div class="agent-name">Product Agent</div><div class="agent-desc">商品案・価格・特典を設計</div></div><div class="agent-status">待機中</div></div>
+            <div class="agent-card"><div class="agent-icon">C</div><div><div class="agent-name">Copy Agent</div><div class="agent-desc">X投稿・note・販売文を作成</div></div><div class="agent-status">待機中</div></div>
+            <div class="agent-card"><div class="agent-icon">F</div><div><div class="agent-name">Funnel Agent</div><div class="agent-desc">無料配布・CTA・導線を設計</div></div><div class="agent-status">待機中</div></div>
+            <div class="agent-card"><div class="agent-icon">G</div><div><div class="agent-name">Growth Agent</div><div class="agent-desc">改善案・次の打ち手を提案</div></div><div class="agent-status">待機中</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap section" id="app">
+      <div class="section-title">
+        <h2>AI社員を起動する</h2>
+        <p>入力はざっくりでOKです。β版では、入力内容をもとにビジネス設計・投稿・販売導線を自動生成します。</p>
+      </div>
+
+      <div class="app-grid">
+        <aside class="panel form-panel">
+          <div class="field">
+            <label for="genre">ジャンル <span>必須</span></label>
+            <input id="genre" type="text" value="AI副業" placeholder="例：AI副業、投資、SNS運用、美容、転職" />
+          </div>
+          <div class="field">
+            <label for="target">ターゲット <span>必須</span></label>
+            <input id="target" type="text" value="副業初心者" placeholder="例：会社員、個人事業主、主婦、投資初心者" />
+          </div>
+          <div class="field">
+            <label for="offer">販売したいもの <span>任意</span></label>
+            <input id="offer" type="text" value="note・テンプレ商品" placeholder="例：note、講座、月額コミュニティ、アフィリエイト" />
+          </div>
+          <div class="field">
+            <label for="platform">メインSNS <span>任意</span></label>
+            <select id="platform">
+              <option>X</option>
+              <option>Instagram</option>
+              <option>TikTok</option>
+              <option>Threads</option>
+              <option>note</option>
+              <option>複数SNS</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tone">文章の雰囲気 <span>任意</span></label>
+            <select id="tone">
+              <option>信頼感・初心者向け</option>
+              <option>高級感・プロ感</option>
+              <option>親しみやすい</option>
+              <option>煽り強め</option>
+              <option>シンプルで上品</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="detail">補足情報 <span>任意</span></label>
+            <textarea id="detail" placeholder="例：無料配布から有料noteへ誘導したい。怪しく見えないようにしたい。"></textarea>
+          </div>
+
+          <button class="btn btn-primary full" id="generateBtn">AI社員を起動する</button>
+          <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+          <div class="system-log" id="systemLog">SYSTEM READY / 入力後に起動できます</div>
+        </aside>
+
+        <section class="panel result-panel" aria-live="polite">
+          <div id="resultArea" class="result-empty">
+            <div>
+              <strong>生成結果はここに表示されます</strong>
+              <p>AI社員を起動すると、商品設計・投稿文・販売導線・30日プランをまとめて出力します。</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="wrap section" id="features">
+      <div class="section-title">
+        <h2>ただの生成ツールで終わらせない</h2>
+        <p>見た瞬間に「次世代っぽい」と思わせるため、AI社員が役割分担して動くUIにしています。</p>
+      </div>
+      <div class="cards3">
+        <div class="panel feature"><div class="num">01</div><h3>AI社員UI</h3><p>市場分析・商品設計・投稿作成・導線設計・改善提案を5人のAI社員として見せます。</p></div>
+        <div class="panel feature"><div class="num">02</div><h3>即コピペ可能</h3><p>生成結果はセクションごとにコピーできます。投稿、LP、CTA、30日プランまで一括出力。</p></div>
+        <div class="panel feature"><div class="num">03</div><h3>収益導線に強い</h3><p>無料デモから有料版、テンプレ販売、月額化、個別構築サポートへ拡張できます。</p></div>
+      </div>
+    </section>
+
+    <section class="wrap section" id="pricing">
+      <div class="section-title">
+        <h2>将来の料金設計</h2>
+        <p>β版で反応を見てから、API接続・保存機能・ログイン・決済を追加する流れが現実的です。</p>
+      </div>
+      <div class="pricing">
+        <div class="panel price-card">
+          <h3>Free</h3>
+          <p class="mini-note">まず試してもらう入口</p>
+          <div class="price">¥0 <small>/ 月</small></div>
+          <ul><li>月3回生成</li><li>投稿3本まで</li><li>商品案1つ</li><li>一部コピー可能</li></ul>
+        </div>
+        <div class="panel price-card featured">
+          <h3>Standard</h3>
+          <p class="mini-note">一番売りやすい中心プラン</p>
+          <div class="price">¥2,980 <small>/ 月</small></div>
+          <ul><li>月50回生成</li><li>投稿・note・LP生成</li><li>30日投稿プラン</li><li>保存機能</li></ul>
+        </div>
+        <div class="panel price-card">
+          <h3>Pro</h3>
+          <p class="mini-note">本気の事業者向け</p>
+          <div class="price">¥9,800 <small>/ 月</small></div>
+          <ul><li>生成回数大幅増</li><li>複数ジャンル管理</li><li>改善分析</li><li>チーム利用</li></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      AI WORKERS OS β版 / Demo Site. APIキーは含まれていません。GitHub Pages・Vercel・Netlifyで公開できます。
+    </div>
+  </footer>
+
+  <div class="toast" id="toast">コピーしました</div>
+
+  <script>
+    const agents = [
+      { key: "research", name: "Research Agent", active: "市場を分析中...", done: "分析完了" },
+      { key: "product", name: "Product Agent", active: "商品を設計中...", done: "設計完了" },
+      { key: "copy", name: "Copy Agent", active: "投稿文を生成中...", done: "生成完了" },
+      { key: "funnel", name: "Funnel Agent", active: "導線を構築中...", done: "構築完了" },
+      { key: "growth", name: "Growth Agent", active: "改善案を検出中...", done: "検出完了" }
+    ];
+
+    const generateBtn = document.getElementById("generateBtn");
+    const progressBar = document.getElementById("progressBar");
+    const systemLog = document.getElementById("systemLog");
+    const resultArea = document.getElementById("resultArea");
+    const toast = document.getElementById("toast");
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function getValue(id, fallback) {
+      const value = document.getElementById(id).value.trim();
+      return value || fallback;
+    }
+
+    function showToast(message = "コピーしました") {
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1600);
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("コピーしました");
+      } catch (e) {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+        showToast("コピーしました");
+      }
+    }
+
+    function buildProductName(genre) {
+      const clean = genre.replace(/\s+/g, "");
+      return [
+        `${clean}スターターOS`,
+        `${clean}収益化キット`,
+        `${clean}AI実践パック`,
+        `${clean}ロードマップ30`,
+        `${clean}テンプレートLab`
+      ];
+    }
+
+    function toneLine(tone) {
+      if (tone.includes("高級")) return "専門性と信頼感を強め、安売りに見えない表現で統一する。";
+      if (tone.includes("煽り")) return "興味を強く引きつつ、断定や過度な誇張は避けて期待値を調整する。";
+      if (tone.includes("親し")) return "難しい言葉を避け、身近な悩みから入って共感を作る。";
+      if (tone.includes("上品")) return "余計な装飾を減らし、短く洗練された言葉で伝える。";
+      return "初心者にも伝わる言葉で、不安を減らしながら信頼を積み上げる。";
+    }
+
+    function generateContent(data) {
+      const names = buildProductName(data.genre);
+      const toneAdvice = toneLine(data.tone);
+      const offer = data.offer || "デジタル商品";
+      const detail = data.detail ? `\n補足方針：${data.detail}` : "";
+
+      const concept = `${data.genre}に興味がある${data.target}向けに、最初の一歩を迷わず進められる実践型パッケージを作る。\n\n狙いは「知識を売る」ではなく、「すぐ使える型」を売ること。\n無料コンテンツで信頼を作り、有料版ではテンプレ・手順・投稿例・導線設計までまとめて提供する。\n\n販売形式：${offer}\nメインSNS：${data.platform}\n表現方針：${toneAdvice}${detail}`;
+
+      const pricing = `入口商品：980円〜2,980円\n本命商品：9,800円〜29,800円\n上位商品：49,800円〜198,000円\n\n最初は低価格で実績と反応を取り、購入者の声・使用例・改善ログを集める。\n反応が取れたら、テンプレ追加・個別添削・月額サポートに展開する。`;
+
+      const freeGift = `無料プレゼント案：\n・${data.genre}で最初にやるべき10ステップPDF\n・${data.target}向けチェックリスト\n・投稿ネタ30個リスト\n・売れる商品設計シート\n・失敗しやすいポイントまとめ\n\n無料配布の最後に「完成テンプレを使いたい人向けに有料版を用意しています」と自然に誘導する。`;
+
+      const posts = `【${data.genre}で止まる人の共通点】\n\n多くの人は、やる気がないわけではありません。\n止まる理由は「何から始めればいいか」が決まっていないからです。\n\n・投稿ネタがない\n・商品案がない\n・導線がない\n・何を売ればいいか分からない\n\nここが整理できるだけで、行動はかなり楽になります。\nまずは完璧な商品より、売れる流れを作ることが先です。\n\n---\n\n【${data.target}こそ、テンプレを使った方がいい】\n\nゼロから考えると時間がかかります。\nでも、型があれば一気に進みます。\n\n${data.genre}で大事なのは、才能よりも順番。\n\n1. 悩みを決める\n2. 解決策を作る\n3. 無料で信頼を作る\n4. 有料版に誘導する\n5. 反応を見て改善する\n\nこの流れを作るだけで、かなり見え方が変わります。\n\n---\n\n【${data.genre}は、情報より“使える形”が売れやすい】\n\nただノウハウを並べても、読者は動けません。\n\n本当に求められているのは、\n・そのまま使えるテンプレ\n・失敗しにくい手順\n・真似できる投稿例\n・購入までの導線\n\n知識ではなく、行動できる形にして渡す。\nこれが商品化のコツです。`;
+
+      const note = `note記事構成：\n\nタイトル案：\n${data.target}が${data.genre}で最初に迷わないための実践ロードマップ\n\n構成：\n1. なぜ多くの人が途中で止まるのか\n2. ${data.genre}で最初に決めるべきこと\n3. 売れるテーマの見つけ方\n4. 無料発信から有料商品につなげる流れ\n5. 投稿ネタの作り方\n6. 販売ページに必要な要素\n7. 今日から使えるチェックリスト\n8. 完成テンプレの案内`;
+
+      const lp = `販売ページ文章：\n\n${data.genre}を始めたいけど、何から作ればいいか分からない${data.target}へ。\n\nこの商品では、投稿・商品設計・販売ページ・無料配布・導線作成まで、すぐ使える形でまとめています。\n\nゼロから考える必要はありません。\nあなたのジャンルに当てはめて、順番に進めるだけでOKです。\n\n一番大変なのは、才能ではなく「最初の型」がないことです。\n\nこのキットは、${data.genre}で最初の一歩を具体化するための実践セットです。`;
+
+      const cta = `CTA案：\n\nまずは無料チェックリストから受け取ってください。\n内容を見て「自分にも使えそう」と思った人だけ、有料版を検討すればOKです。\n\n強めのCTA：\n考えて止まる時間を減らして、今日から形にしてください。\nテンプレを使えば、最初の一歩はかなり楽になります。\n\n上品なCTA：\nまずは無料版で全体像を確認してください。\n必要な方だけ、完成テンプレ版をご利用ください。`;
+
+      const plan = Array.from({ length: 30 }, (_, i) => {
+        const day = i + 1;
+        const themes = [
+          "悩みの共感投稿", "よくある失敗", "チェックリスト", "成功までの順番", "無料配布の案内",
+          "商品コンセプト紹介", "お客様目線の不安解消", "ビフォーアフター", "よくある質問", "CTA投稿"
+        ];
+        return `Day ${String(day).padStart(2, "0")}: ${themes[i % themes.length]}`;
+      }).join("\n");
+
+      const improvement = `改善アドバイス：\n・最初は商品を作り込みすぎず、無料配布への反応を見る\n・反応がよい投稿テーマを有料商品の見出しに使う\n・価格は最初から高額にせず、入口商品→本命商品→上位商品の順で作る\n・「稼げる」よりも「迷わず始められる」「作業時間を減らせる」を前面に出す\n・購入前の不安を減らすために、中身の一部を画像やサンプルで見せる`;
+
+      return [
+        { title: "商品コンセプト", body: concept },
+        { title: "商品名候補", body: names.map((n, i) => `${i + 1}. ${n}`).join("\n") },
+        { title: "価格設定", body: pricing },
+        { title: "無料プレゼント案", body: freeGift },
+        { title: `${data.platform}投稿3本`, body: posts },
+        { title: "note記事構成", body: note },
+        { title: "販売ページ文章", body: lp },
+        { title: "CTA文", body: cta },
+        { title: "30日投稿プラン", body: plan },
+        { title: "改善アドバイス", body: improvement }
+      ];
+    }
+
+    function renderResult(blocks) {
+      const allText = blocks.map(block => `【${block.title}】\n${block.body}`).join("\n\n");
+      resultArea.className = "";
+      resultArea.innerHTML = `
+        <div class="result-actions">
+          <button class="btn btn-primary" id="copyAllBtn">全体をコピー</button>
+          <button class="btn btn-ghost" id="downloadBtn">テキスト保存</button>
+          <button class="btn btn-ghost" id="resetBtn">もう一度生成</button>
+        </div>
+        ${blocks.map((block, index) => `
+          <article class="output-block">
+            <div class="output-head">
+              <h3>${escapeHtml(block.title)}</h3>
+              <button class="copy-small" data-copy-index="${index}">コピー</button>
+            </div>
+            <div class="output-content">${escapeHtml(block.body)}</div>
+          </article>
+        `).join("")}
+      `;
+
+      document.getElementById("copyAllBtn").addEventListener("click", () => copyText(allText));
+      document.getElementById("downloadBtn").addEventListener("click", () => downloadText(allText));
+      document.getElementById("resetBtn").addEventListener("click", () => runGeneration());
+      resultArea.querySelectorAll("[data-copy-index]").forEach(btn => {
+        btn.addEventListener("click", () => copyText(blocks[Number(btn.dataset.copyIndex)].body));
+      });
+    }
+
+    function downloadText(text) {
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "ai-workers-os-result.txt";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("テキストを保存しました");
+    }
+
+    function resetAgentCards() {
+      document.querySelectorAll(".agent-card").forEach(card => {
+        card.classList.remove("active", "done");
+        const status = card.querySelector(".agent-status");
+        if (status) status.textContent = "待機中";
+      });
+    }
+
+    function updateAgent(index, state) {
+      const cards = document.querySelectorAll("#heroAgents .agent-card");
+      const card = cards[index];
+      if (!card) return;
+      const status = card.querySelector(".agent-status");
+      card.classList.remove("active", "done");
+      if (state === "active") {
+        card.classList.add("active");
+        status.textContent = "処理中";
+      }
+      if (state === "done") {
+        card.classList.add("done");
+        status.textContent = "完了";
+      }
+    }
+
+    function runGeneration() {
+      const data = {
+        genre: getValue("genre", "AI副業"),
+        target: getValue("target", "副業初心者"),
+        offer: getValue("offer", "note・テンプレ商品"),
+        platform: getValue("platform", "X"),
+        tone: getValue("tone", "信頼感・初心者向け"),
+        detail: getValue("detail", "")
+      };
+
+      generateBtn.disabled = true;
+      generateBtn.textContent = "AI社員が作業中...";
+      progressBar.style.width = "0%";
+      systemLog.textContent = "SYSTEM BOOTING / AI社員を起動しています";
+      resetAgentCards();
+      resultArea.className = "result-empty";
+      resultArea.innerHTML = `<div><strong>AI社員が作業中です</strong><p>市場分析・商品設計・投稿作成・導線構築を順番に実行しています。</p></div>`;
+
+      let step = 0;
+      const timer = setInterval(() => {
+        if (step > 0) updateAgent(step - 1, "done");
+        if (step < agents.length) {
+          updateAgent(step, "active");
+          systemLog.textContent = `${agents[step].name} / ${agents[step].active}`;
+          progressBar.style.width = `${(step / agents.length) * 88 + 12}%`;
+          step++;
+        } else {
+          clearInterval(timer);
+          progressBar.style.width = "100%";
+          systemLog.textContent = "OUTPUT READY / 生成が完了しました";
+          generateBtn.disabled = false;
+          generateBtn.textContent = "AI社員を起動する";
+          renderResult(generateContent(data));
+          document.querySelector("#app").scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 560);
+    }
+
+    generateBtn.addEventListener("click", runGeneration);
+
+    // Heroのステータスを自動で巡回させ、動いている印象を作る
+    let heroIndex = 0;
+    setInterval(() => {
+      const cards = document.querySelectorAll("#heroAgents .agent-card");
+      cards.forEach((card, index) => {
+        card.classList.remove("active", "done");
+        const status = card.querySelector(".agent-status");
+        if (index < heroIndex) {
+          card.classList.add("done");
+          status.textContent = "完了";
+        } else if (index === heroIndex) {
+          card.classList.add("active");
+          status.textContent = "分析中";
+        } else {
+          status.textContent = "待機中";
+        }
+      });
+      heroIndex = (heroIndex + 1) % 5;
+    }, 1600);
+  </script>
+</body>
+</html>
