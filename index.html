@@ -3,17 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI WORKERS OS β版 | ひとりビジネスをAIチームで動かす</title>
-  <meta name="description" content="ジャンルを入力するだけで、AI社員が商品設計・SNS投稿・販売導線を生成するβ版デモサイト。" />
+  <title>AI WORKERS OS | ひとりビジネスをAIチームで動かす</title>
+  <meta name="description" content="ジャンルを入力するだけで、AI社員が商品設計・SNS投稿・販売導線・改善案まで生成する次世代型ビジネス設計デモサイト。" />
+  <meta property="og:title" content="AI WORKERS OS | ひとりビジネスをAIチームで動かす" />
+  <meta property="og:description" content="AI社員が市場分析・商品企画・投稿作成・販売導線・改善提案までサポート。無料デモ公開中。" />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#070817" />
   <style>
     :root {
       --bg: #050612;
-      --panel: rgba(18, 22, 48, 0.62);
-      --panel2: rgba(9, 13, 33, 0.82);
-      --line: rgba(149, 121, 255, 0.35);
+      --bg2: #090b1c;
+      --panel: rgba(18, 22, 48, 0.66);
+      --panel2: rgba(9, 13, 33, 0.86);
+      --panel3: rgba(255, 255, 255, 0.055);
+      --line: rgba(149, 121, 255, 0.34);
+      --line2: rgba(73, 230, 255, 0.28);
       --text: #f5f7ff;
-      --muted: #a9b2d6;
-      --subtle: #6f78a8;
+      --muted: #aab3dc;
+      --subtle: #747eaa;
       --cyan: #49e6ff;
       --purple: #a36bff;
       --pink: #ff5eea;
@@ -21,26 +28,21 @@
       --yellow: #ffe27a;
       --danger: #ff6d91;
       --shadow: 0 0 45px rgba(95, 89, 255, 0.22);
-      --radius: 22px;
+      --shadow2: 0 30px 90px rgba(0, 0, 0, 0.42);
+      --radius: 24px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
       color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
       background:
-        radial-gradient(circle at 15% 5%, rgba(80, 78, 255, 0.22), transparent 32%),
-        radial-gradient(circle at 85% 15%, rgba(255, 71, 224, 0.18), transparent 26%),
-        radial-gradient(circle at 50% 100%, rgba(40, 225, 255, 0.12), transparent 35%),
-        var(--bg);
+        radial-gradient(circle at 14% 4%, rgba(80, 78, 255, 0.26), transparent 30%),
+        radial-gradient(circle at 86% 12%, rgba(255, 71, 224, 0.18), transparent 28%),
+        radial-gradient(circle at 52% 95%, rgba(40, 225, 255, 0.11), transparent 36%),
+        linear-gradient(180deg, #050612 0%, #06071a 55%, #03040d 100%);
       min-height: 100vh;
       overflow-x: hidden;
     }
@@ -49,24 +51,24 @@
       content: "";
       position: fixed;
       inset: 0;
+      pointer-events: none;
+      z-index: -2;
       background-image:
         linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0.18));
-      pointer-events: none;
-      z-index: -2;
+      background-size: 52px 52px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.88), rgba(0,0,0,0.12));
     }
 
     body::after {
       content: "";
       position: fixed;
       inset: 0;
-      background: linear-gradient(120deg, transparent 0%, rgba(73,230,255,0.05) 50%, transparent 100%);
-      transform: translateX(-100%);
-      animation: scan 8s infinite linear;
       pointer-events: none;
       z-index: -1;
+      background: linear-gradient(115deg, transparent 0%, rgba(73,230,255,0.045) 48%, transparent 100%);
+      transform: translateX(-120%);
+      animation: scan 9s infinite linear;
     }
 
     @keyframes scan {
@@ -74,1066 +76,880 @@
       100% { transform: translateX(130%); }
     }
 
-    .wrap {
-      width: min(1180px, calc(100% - 28px));
-      margin: 0 auto;
+    a { color: inherit; text-decoration: none; }
+    button, input, textarea, select { font: inherit; }
+    .wrap { width: min(1180px, calc(100% - 28px)); margin: 0 auto; }
+    .section { padding: 82px 0; position: relative; }
+    .mini { color: var(--cyan); font-weight: 800; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; }
+    .glow-text {
+      background: linear-gradient(90deg, var(--cyan), #fff, var(--purple), var(--pink));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
     header {
-      padding: 26px 0 10px;
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 60;
       backdrop-filter: blur(18px);
-      background: linear-gradient(to bottom, rgba(5,6,18,0.86), rgba(5,6,18,0.35));
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: linear-gradient(180deg, rgba(5,6,18,0.90), rgba(5,6,18,0.54));
+      border-bottom: 1px solid rgba(255,255,255,0.075);
     }
-
     .nav {
+      min-height: 74px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 18px;
     }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 900;
-      letter-spacing: 0.08em;
-    }
-
+    .logo { display: flex; align-items: center; gap: 12px; font-weight: 950; letter-spacing: .08em; }
     .logo-mark {
-      width: 36px;
-      height: 36px;
-      border-radius: 12px;
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
       background: linear-gradient(135deg, var(--cyan), var(--purple), var(--pink));
-      box-shadow: 0 0 24px rgba(73,230,255,0.42);
+      box-shadow: 0 0 28px rgba(73,230,255,0.40);
       position: relative;
+      overflow: hidden;
     }
-
     .logo-mark::after {
       content: "";
       position: absolute;
       inset: 8px;
-      border: 1px solid rgba(255,255,255,0.9);
+      border: 1px solid rgba(255,255,255,.82);
       border-radius: 8px;
+      box-shadow: inset 0 0 12px rgba(255,255,255,.3);
     }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 14px;
+    .nav-links { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .nav-links a {
       color: var(--muted);
       font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      transition: .2s;
     }
-
-    .nav-links a {
-      color: inherit;
-      text-decoration: none;
-    }
+    .nav-links a:hover { color: #fff; background: rgba(255,255,255,.06); }
 
     .btn {
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.07);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 12px 18px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: 0.22s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 9px;
-      text-decoration: none;
-      user-select: none;
-      font-size: 14px;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      border-color: rgba(73,230,255,0.55);
-      box-shadow: 0 0 28px rgba(73,230,255,0.18);
-    }
-
-    .btn-primary {
-      border: 0;
-      background: linear-gradient(135deg, var(--cyan), var(--purple), var(--pink));
-      box-shadow: 0 0 34px rgba(163,107,255,0.35);
+      min-height: 46px;
+      padding: 12px 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 999px;
+      cursor: pointer;
       color: #fff;
+      background: rgba(255,255,255,0.06);
+      box-shadow: none;
+      transition: transform .18s, border-color .18s, background .18s, box-shadow .18s;
+      user-select: none;
     }
-
-    .btn-ghost {
-      background: rgba(255,255,255,0.045);
+    .btn:hover { transform: translateY(-1px); border-color: rgba(73,230,255,.42); background: rgba(255,255,255,.09); }
+    .btn.primary {
+      color: #02040d;
+      border: 0;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--cyan), #d0fbff 38%, var(--purple));
+      box-shadow: 0 0 28px rgba(73,230,255,0.30), 0 18px 45px rgba(0,0,0,.32);
     }
+    .btn.primary:hover { box-shadow: 0 0 38px rgba(73,230,255,0.42), 0 20px 50px rgba(0,0,0,.36); }
+    .btn.danger { border-color: rgba(255,109,145,.32); color: #ffd8e3; }
+    .btn.small { min-height: 36px; padding: 8px 12px; font-size: 12px; }
+    .btn.full { width: 100%; }
 
-    .hero {
-      padding: 72px 0 34px;
-      display: grid;
-      grid-template-columns: 1.02fr 0.98fr;
-      gap: 34px;
-      align-items: center;
-    }
-
+    .hero { padding: 82px 0 38px; }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 34px; align-items: center; }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; }
     .badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      border: 1px solid rgba(73,230,255,0.28);
-      background: rgba(73,230,255,0.08);
-      color: #dffbff;
+      padding: 8px 11px;
+      border: 1px solid rgba(73,230,255,.22);
       border-radius: 999px;
-      padding: 8px 12px;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-      margin-bottom: 18px;
-    }
-
-    .pulse {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 16px var(--green);
-      animation: pulse 1.4s infinite ease-in-out;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(0.8); opacity: 0.6; }
-      50% { transform: scale(1.35); opacity: 1; }
-    }
-
-    h1 {
-      font-size: clamp(42px, 7vw, 86px);
-      line-height: 0.98;
-      letter-spacing: -0.075em;
-      margin: 0 0 18px;
-    }
-
-    .grad {
-      background: linear-gradient(135deg, #fff, #bff8ff 28%, #caa9ff 62%, #ff9ef4);
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    .lead {
       color: var(--muted);
-      font-size: clamp(16px, 2vw, 20px);
-      line-height: 1.9;
-      margin: 0 0 25px;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .mini-note {
-      color: var(--subtle);
+      background: rgba(255,255,255,.045);
       font-size: 12px;
-      margin-top: 14px;
-      line-height: 1.7;
+      backdrop-filter: blur(12px);
     }
+    .dot { width: 7px; height: 7px; border-radius: 999px; background: var(--green); box-shadow: 0 0 14px var(--green); }
+    h1 { margin: 0; font-size: clamp(42px, 6vw, 82px); line-height: .98; letter-spacing: -0.075em; }
+    .lead { color: var(--muted); font-size: clamp(16px, 2vw, 20px); line-height: 1.9; margin: 24px 0 0; max-width: 720px; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin: 30px 0 0; }
+    .hero-note { color: var(--subtle); font-size: 12px; margin-top: 16px; line-height: 1.8; }
 
-    .terminal {
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(21,25,55,0.72), rgba(8,10,25,0.78));
+    .terminal-card, .glass-card, .agent-card, .output-card, .price-card, .step-card {
+      border: 1px solid rgba(255,255,255,0.10);
+      background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035));
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(18px);
       position: relative;
+      overflow: hidden;
     }
-
-    .terminal::before {
+    .terminal-card::before, .glass-card::before, .agent-card::before, .output-card::before, .price-card::before, .step-card::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at top right, rgba(73,230,255,0.12), transparent 36%);
       pointer-events: none;
+      background: radial-gradient(circle at 20% 0%, rgba(73,230,255,.14), transparent 26%), radial-gradient(circle at 90% 10%, rgba(163,107,255,.12), transparent 28%);
     }
 
-    .terminal-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      background: rgba(0,0,0,0.18);
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: 0.06em;
-    }
-
-    .dots {
-      display: flex;
-      gap: 7px;
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--subtle);
-    }
-
-    .dot:nth-child(1) { background: #ff5f77; }
-    .dot:nth-child(2) { background: #ffcc66; }
-    .dot:nth-child(3) { background: #57ffab; }
-
-    .terminal-body {
-      padding: 18px;
-      position: relative;
-    }
-
-    .agent-grid {
+    .terminal-card { padding: 18px; min-height: 430px; transform: perspective(900px) rotateY(-5deg) rotateX(2deg); }
+    .terminal-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid rgba(255,255,255,.08); padding-bottom: 14px; margin-bottom: 16px; }
+    .traffic { display: flex; gap: 7px; }
+    .traffic span { width: 10px; height: 10px; border-radius: 999px; display: block; background: rgba(255,255,255,.22); }
+    .traffic span:nth-child(1) { background: var(--danger); }
+    .traffic span:nth-child(2) { background: var(--yellow); }
+    .traffic span:nth-child(3) { background: var(--green); }
+    .terminal-title { color: var(--muted); font-size: 12px; letter-spacing: .14em; }
+    .agent-stack { display: grid; gap: 12px; }
+    .agent-line {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-
-    .agent-card {
-      display: grid;
-      grid-template-columns: 42px 1fr auto;
+      grid-template-columns: 1fr auto;
       gap: 12px;
       align-items: center;
       padding: 13px;
-      border: 1px solid rgba(255,255,255,0.09);
-      background: rgba(255,255,255,0.045);
-      border-radius: 16px;
-      position: relative;
-      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.18);
+      border-radius: 18px;
     }
-
-    .agent-card.active {
-      border-color: rgba(73,230,255,0.55);
-      box-shadow: inset 0 0 24px rgba(73,230,255,0.08), 0 0 22px rgba(73,230,255,0.12);
-    }
-
-    .agent-card.done {
-      border-color: rgba(109,255,184,0.36);
-    }
-
-    .agent-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(73,230,255,0.22), rgba(163,107,255,0.22));
-      border: 1px solid rgba(255,255,255,0.12);
-      display: grid;
-      place-items: center;
-      font-weight: 900;
-      color: #eafcff;
-      box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
-    }
-
-    .agent-name {
-      font-weight: 900;
-      margin-bottom: 4px;
-    }
-
-    .agent-desc {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .agent-status {
-      color: var(--subtle);
+    .agent-line strong { display: block; font-size: 14px; }
+    .agent-line small { display: block; color: var(--subtle); margin-top: 4px; }
+    .status {
       font-size: 11px;
+      color: var(--green);
       padding: 6px 9px;
+      border: 1px solid rgba(109,255,184,.24);
+      background: rgba(109,255,184,.075);
       border-radius: 999px;
-      background: rgba(255,255,255,0.055);
       white-space: nowrap;
     }
-
-    .agent-card.active .agent-status {
-      color: #041018;
-      background: var(--cyan);
-      box-shadow: 0 0 18px rgba(73,230,255,0.45);
-    }
-
-    .agent-card.done .agent-status {
-      color: #06180f;
-      background: var(--green);
-    }
-
-    .section {
-      padding: 48px 0;
-    }
-
-    .section-title {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-
-    .section-title h2 {
-      margin: 0;
-      font-size: clamp(28px, 4vw, 48px);
-      letter-spacing: -0.05em;
-    }
-
-    .section-title p {
-      color: var(--muted);
-      line-height: 1.8;
-      margin: 0;
-      max-width: 560px;
-    }
-
-    .panel {
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(18,22,48,0.68), rgba(8,10,25,0.70));
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(20px);
-    }
-
-    .app-grid {
-      display: grid;
-      grid-template-columns: 0.85fr 1.15fr;
-      gap: 18px;
-      align-items: start;
-    }
-
-    .form-panel {
-      padding: 18px;
-      position: sticky;
-      top: 92px;
-    }
-
-    .field {
-      margin-bottom: 14px;
-    }
-
-    label {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      color: #dfe6ff;
-      font-weight: 800;
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-
-    label span {
-      color: var(--subtle);
-      font-weight: 700;
-      font-size: 11px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      border: 1px solid rgba(255,255,255,0.11);
-      background: rgba(2,5,18,0.68);
-      color: var(--text);
-      border-radius: 14px;
-      padding: 13px 14px;
-      outline: none;
-      transition: 0.2s ease;
-      font: inherit;
-    }
-
-    textarea {
-      min-height: 88px;
-      resize: vertical;
-      line-height: 1.7;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: rgba(73,230,255,0.6);
-      box-shadow: 0 0 0 4px rgba(73,230,255,0.10);
-    }
-
-    .full {
-      width: 100%;
-      margin-top: 4px;
-      min-height: 48px;
-    }
-
-    .progress {
-      height: 10px;
-      background: rgba(255,255,255,0.07);
-      border-radius: 999px;
-      overflow: hidden;
-      margin: 16px 0 8px;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .progress-bar {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
-      transition: width 0.45s ease;
-      box-shadow: 0 0 18px rgba(73,230,255,0.5);
-    }
-
-    .system-log {
-      color: var(--muted);
-      min-height: 22px;
+    .status.wait { color: var(--subtle); border-color: rgba(255,255,255,.12); background: rgba(255,255,255,.04); }
+    .status.run { color: var(--cyan); border-color: rgba(73,230,255,.35); background: rgba(73,230,255,.08); animation: pulse 1s infinite alternate; }
+    @keyframes pulse { from { box-shadow: 0 0 0 rgba(73,230,255,0); } to { box-shadow: 0 0 18px rgba(73,230,255,.22); } }
+    .console {
+      min-height: 92px;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(0,0,0,.25);
+      border: 1px solid rgba(73,230,255,.12);
+      color: #dceaff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 12px;
-      letter-spacing: 0.04em;
+      line-height: 1.8;
     }
+    .cursor { display: inline-block; width: 8px; height: 14px; margin-left: 2px; background: var(--cyan); animation: blink .9s infinite; vertical-align: middle; }
+    @keyframes blink { 50% { opacity: 0; } }
 
-    .result-panel {
-      padding: 18px;
-      min-height: 640px;
-    }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 30px; }
+    .metric { padding: 18px; border: 1px solid rgba(255,255,255,.09); border-radius: 20px; background: rgba(255,255,255,.045); }
+    .metric b { display: block; font-size: 24px; }
+    .metric span { color: var(--subtle); font-size: 12px; }
 
-    .result-empty {
-      display: grid;
-      place-items: center;
-      min-height: 560px;
-      text-align: center;
-      color: var(--muted);
-      border: 1px dashed rgba(255,255,255,0.16);
-      border-radius: 18px;
-      padding: 22px;
-      background: rgba(255,255,255,0.03);
-    }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 18px; margin-bottom: 24px; }
+    .section-head h2 { margin: 7px 0 0; font-size: clamp(28px, 4vw, 48px); letter-spacing: -0.05em; line-height: 1.08; }
+    .section-head p { color: var(--muted); margin: 0; line-height: 1.8; max-width: 560px; }
 
-    .result-empty strong {
+    .agents { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+    .agent-card { padding: 18px; min-height: 190px; }
+    .agent-icon { width: 42px; height: 42px; border-radius: 15px; display: grid; place-items: center; background: rgba(73,230,255,.10); border: 1px solid rgba(73,230,255,.22); margin-bottom: 14px; font-size: 20px; }
+    .agent-card h3 { margin: 0 0 8px; font-size: 16px; }
+    .agent-card p { color: var(--muted); line-height: 1.75; font-size: 13px; margin: 0; }
+
+    .app-panel { display: grid; grid-template-columns: .9fr 1.1fr; gap: 18px; align-items: start; }
+    .glass-card { padding: 22px; }
+    .form-grid { display: grid; gap: 14px; }
+    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    input, textarea, select {
+      width: 100%;
       color: var(--text);
-      font-size: 20px;
-      display: block;
-      margin-bottom: 8px;
+      background: rgba(0,0,0,.24);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      padding: 14px 14px;
+      outline: none;
+      transition: border-color .18s, box-shadow .18s, background .18s;
     }
-
-    .result-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
-
-    .output-block {
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.045);
-      border-radius: 18px;
-      padding: 16px;
-      margin-bottom: 12px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .output-block::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-      background: linear-gradient(var(--cyan), var(--purple), var(--pink));
-    }
-
-    .output-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .output-head h3 {
-      margin: 0;
-      font-size: 16px;
-      letter-spacing: -0.01em;
-    }
-
-    .copy-small {
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
+    textarea { min-height: 92px; resize: vertical; line-height: 1.7; }
+    input:focus, textarea:focus, select:focus { border-color: rgba(73,230,255,.55); box-shadow: 0 0 0 4px rgba(73,230,255,.08); background: rgba(0,0,0,.32); }
+    option { color: #111; }
+    .quick-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 2px; }
+    .tag {
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.055);
       color: var(--muted);
       border-radius: 999px;
       padding: 7px 10px;
-      font-size: 11px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: .18s;
+    }
+    .tag:hover { color: #fff; border-color: rgba(73,230,255,.35); }
+    .checkbox-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      border-radius: 14px;
+      padding: 10px;
+      color: var(--muted);
+      font-size: 12px;
       cursor: pointer;
     }
+    .check-item input { width: auto; accent-color: #49e6ff; }
 
-    .copy-small:hover {
-      color: var(--text);
-      border-color: rgba(73,230,255,0.45);
+    .result-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .result-head h3 { margin: 0; font-size: 18px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .tab {
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.045);
+      color: var(--muted);
+      font-size: 12px;
+      cursor: pointer;
     }
-
-    .output-content {
-      color: #e9edff;
-      line-height: 1.85;
+    .tab.active { color: #02040d; background: linear-gradient(135deg, var(--cyan), #fff, var(--purple)); font-weight: 900; }
+    .output-card { padding: 18px; min-height: 520px; }
+    .output-actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+    .result-box {
       white-space: pre-wrap;
-      font-size: 14px;
+      line-height: 1.86;
+      color: #eef3ff;
+      min-height: 390px;
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,.09);
+      background: rgba(0,0,0,.22);
+      border-radius: 18px;
+      overflow: auto;
     }
+    .empty-state { color: var(--subtle); display: grid; place-items: center; text-align: center; min-height: 380px; }
+    .empty-state b { display: block; color: var(--text); font-size: 20px; margin-bottom: 8px; }
 
-    .cards3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .feature {
-      padding: 20px;
-      min-height: 180px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .feature::after {
-      content: "";
-      position: absolute;
-      width: 120px;
-      height: 120px;
-      right: -40px;
-      top: -40px;
-      background: radial-gradient(circle, rgba(73,230,255,0.15), transparent 68%);
-    }
-
-    .feature .num {
-      color: var(--cyan);
-      font-weight: 900;
-      letter-spacing: 0.08em;
+    .history-list { display: grid; gap: 10px; margin-top: 14px; }
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.09);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
       font-size: 12px;
-      margin-bottom: 12px;
     }
+    .history-item b { color: #fff; display: block; font-size: 13px; }
 
-    .feature h3 {
-      margin: 0 0 10px;
-      font-size: 19px;
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .step-card { padding: 20px; }
+    .step-no { color: var(--cyan); font-weight: 950; letter-spacing: .12em; font-size: 12px; }
+    .step-card h3 { margin: 10px 0 8px; }
+    .step-card p { margin: 0; color: var(--muted); line-height: 1.75; font-size: 13px; }
+
+    .pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .price-card { padding: 22px; }
+    .price-card.featured { border-color: rgba(73,230,255,.42); box-shadow: 0 0 45px rgba(73,230,255,.18), var(--shadow2); }
+    .price-name { font-size: 15px; font-weight: 950; }
+    .price { font-size: 38px; font-weight: 950; margin: 12px 0 4px; letter-spacing: -0.06em; }
+    .price small { font-size: 14px; color: var(--muted); letter-spacing: 0; }
+    .price-card p { color: var(--muted); line-height: 1.75; }
+    .features { list-style: none; padding: 0; margin: 18px 0; display: grid; gap: 10px; }
+    .features li { color: var(--muted); font-size: 13px; line-height: 1.65; padding-left: 22px; position: relative; }
+    .features li::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: 900; }
+
+    .faq { display: grid; gap: 10px; }
+    details {
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.045);
+      border-radius: 18px;
+      padding: 16px 18px;
     }
+    summary { cursor: pointer; font-weight: 850; }
+    details p { color: var(--muted); line-height: 1.8; margin-bottom: 0; }
 
-    .feature p {
-      color: var(--muted);
-      line-height: 1.8;
-      margin: 0;
-      font-size: 14px;
-    }
-
-    .pricing {
+    .cta-band {
+      padding: 28px;
+      border-radius: 30px;
+      border: 1px solid rgba(73,230,255,.22);
+      background:
+        radial-gradient(circle at 10% 15%, rgba(73,230,255,.18), transparent 28%),
+        radial-gradient(circle at 90% 20%, rgba(255,94,234,.15), transparent 28%),
+        rgba(255,255,255,.055);
+      box-shadow: var(--shadow2);
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 18px;
     }
+    .cta-band h2 { margin: 0; font-size: clamp(26px, 4vw, 44px); letter-spacing: -0.05em; }
+    .cta-band p { margin: 10px 0 0; color: var(--muted); line-height: 1.8; }
 
-    .price-card {
-      padding: 22px;
-      position: relative;
-    }
-
-    .price-card.featured {
-      border-color: rgba(73,230,255,0.48);
-      box-shadow: 0 0 44px rgba(73,230,255,0.18);
-    }
-
-    .price-card h3 {
-      margin: 0 0 8px;
-      font-size: 20px;
-    }
-
-    .price {
-      font-size: 34px;
-      font-weight: 950;
-      letter-spacing: -0.05em;
-      margin: 14px 0;
-    }
-
-    .price small {
-      color: var(--muted);
-      font-size: 13px;
-      letter-spacing: 0;
-    }
-
-    .price-card ul {
-      margin: 14px 0 0;
-      padding: 0;
-      list-style: none;
-      color: var(--muted);
-      line-height: 2;
-      font-size: 14px;
-    }
-
-    .price-card li::before {
-      content: "✓";
-      color: var(--green);
-      margin-right: 8px;
-      font-weight: 900;
-    }
-
-    footer {
-      padding: 38px 0 60px;
-      color: var(--subtle);
-      font-size: 12px;
-      text-align: center;
-    }
+    footer { padding: 44px 0; border-top: 1px solid rgba(255,255,255,.08); color: var(--subtle); font-size: 12px; }
+    .footer-grid { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
 
     .toast {
       position: fixed;
       right: 18px;
       bottom: 18px;
-      background: rgba(7, 11, 28, 0.92);
-      border: 1px solid rgba(73,230,255,0.35);
-      color: var(--text);
-      padding: 12px 14px;
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      transform: translateY(20px);
+      z-index: 100;
+      transform: translateY(18px);
       opacity: 0;
       pointer-events: none;
-      transition: 0.22s ease;
-      z-index: 100;
-      font-size: 13px;
+      transition: .22s;
+      padding: 13px 15px;
+      border-radius: 16px;
+      color: #061018;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--cyan), #fff, var(--purple));
+      box-shadow: var(--shadow2);
     }
+    .toast.show { transform: translateY(0); opacity: 1; }
 
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
+    .mobile-only { display: none; }
+
+    @media (max-width: 980px) {
+      .hero-grid, .app-panel, .cta-band { grid-template-columns: 1fr; }
+      .terminal-card { transform: none; }
+      .agents { grid-template-columns: repeat(2, 1fr); }
+      .metrics, .steps, .pricing { grid-template-columns: 1fr 1fr; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 12px; }
+      .nav-links a:not(.nav-cta) { display: none; }
     }
-
-    @media (max-width: 920px) {
-      .hero, .app-grid, .cards3, .pricing {
-        grid-template-columns: 1fr;
-      }
-      .form-panel {
-        position: static;
-      }
-      .section-title {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-      .nav-links {
-        display: none;
-      }
-      .hero {
-        padding-top: 46px;
-      }
-    }
-
-    @media (max-width: 520px) {
-      .wrap {
-        width: min(100% - 20px, 1180px);
-      }
-      header {
-        padding-top: 16px;
-      }
-      .btn {
-        width: 100%;
-      }
-      .hero-actions .btn {
-        width: 100%;
-      }
-      .agent-card {
-        grid-template-columns: 38px 1fr;
-      }
-      .agent-status {
-        grid-column: 2;
-        justify-self: start;
-      }
-      .terminal-body, .form-panel, .result-panel {
-        padding: 13px;
-      }
+    @media (max-width: 640px) {
+      .wrap { width: min(100% - 20px, 1180px); }
+      .hero { padding-top: 50px; }
+      .section { padding: 58px 0; }
+      .agents, .metrics, .steps, .pricing, .checkbox-grid { grid-template-columns: 1fr; }
+      .terminal-card, .glass-card, .output-card, .price-card, .step-card { border-radius: 20px; }
+      .cta-band { padding: 22px; border-radius: 22px; }
+      .hero-actions .btn, .cta-band .btn { width: 100%; }
+      .result-head { display: block; }
+      .result-head .btn { margin-top: 10px; }
+      .mobile-only { display: block; }
+      .desktop-only { display: none; }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="wrap nav">
-      <div class="logo">
-        <div class="logo-mark" aria-hidden="true"></div>
+      <a class="logo" href="#top" aria-label="AI WORKERS OS Home">
+        <span class="logo-mark"></span>
         <span>AI WORKERS OS</span>
-      </div>
-      <nav class="nav-links" aria-label="主要ナビゲーション">
-        <a href="#app">β版を試す</a>
-        <a href="#features">機能</a>
-        <a href="#pricing">料金案</a>
+      </a>
+      <nav class="nav-links" aria-label="Main Navigation">
+        <a href="#agents">AI社員</a>
+        <a href="#app">無料デモ</a>
+        <a href="#pricing">料金</a>
+        <a href="#faq">FAQ</a>
+        <a class="nav-cta btn small primary" href="#app">AI社員を起動</a>
       </nav>
-      <a href="#app" class="btn btn-primary">AI社員を起動</a>
     </div>
   </header>
 
-  <main>
-    <section class="wrap hero">
-      <div>
-        <div class="badge"><span class="pulse"></span> β DEMO / NO API VERSION</div>
-        <h1><span class="grad">ひとりビジネスを、</span><br />AIチームで動かす。</h1>
-        <p class="lead">
-          ジャンルを入力するだけで、5人のAI社員が商品設計・SNS投稿・販売ページ・CTA・30日投稿プランまでまとめて生成する次世代型デモサイトです。
-        </p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#app">無料で試す</a>
-          <a class="btn btn-ghost" href="#features">仕組みを見る</a>
-        </div>
-        <p class="mini-note">
-          ※このβ版はAPIを使わず、ブラウザだけで動くデモです。公開後にAI API・ログイン・保存・決済機能を追加できます。
-        </p>
-      </div>
-
-      <div class="terminal" aria-label="AI社員ダッシュボード">
-        <div class="terminal-head">
-          <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-          <span>WORKER STATUS</span>
-        </div>
-        <div class="terminal-body">
-          <div class="agent-grid" id="heroAgents">
-            <div class="agent-card active"><div class="agent-icon">R</div><div><div class="agent-name">Research Agent</div><div class="agent-desc">市場・需要・競合を整理</div></div><div class="agent-status">分析中</div></div>
-            <div class="agent-card"><div class="agent-icon">P</div><div><div class="agent-name">Product Agent</div><div class="agent-desc">商品案・価格・特典を設計</div></div><div class="agent-status">待機中</div></div>
-            <div class="agent-card"><div class="agent-icon">C</div><div><div class="agent-name">Copy Agent</div><div class="agent-desc">X投稿・note・販売文を作成</div></div><div class="agent-status">待機中</div></div>
-            <div class="agent-card"><div class="agent-icon">F</div><div><div class="agent-name">Funnel Agent</div><div class="agent-desc">無料配布・CTA・導線を設計</div></div><div class="agent-status">待機中</div></div>
-            <div class="agent-card"><div class="agent-icon">G</div><div><div class="agent-name">Growth Agent</div><div class="agent-desc">改善案・次の打ち手を提案</div></div><div class="agent-status">待機中</div></div>
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="badge-row">
+            <span class="badge"><span class="dot"></span> β DEMO ONLINE</span>
+            <span class="badge">No Code / No Login</span>
+            <span class="badge">SNS・note・商品設計対応</span>
           </div>
+          <h1>ひとりビジネスを、<br><span class="glow-text">AIチーム</span>で動かす。</h1>
+          <p class="lead">ジャンルを入力するだけで、5人のAI社員が市場分析・商品企画・SNS投稿・販売ページ・CTA・30日投稿プランまでまとめて作成します。</p>
+          <div class="hero-actions">
+            <a href="#app" class="btn primary">無料でAI社員を起動する</a>
+            <a href="#pricing" class="btn">有料版の構想を見る</a>
+          </div>
+          <p class="hero-note">※このβ版はAPIなしで動くデモです。生成結果はテンプレート方式です。本格版ではサーバー側AI連携・保存・ログイン・決済に対応できます。</p>
+          <div class="metrics">
+            <div class="metric"><b>5</b><span>AI Agents</span></div>
+            <div class="metric"><b>10</b><span>Output Blocks</span></div>
+            <div class="metric"><b>30</b><span>Days Plan</span></div>
+            <div class="metric"><b>0</b><span>Setup Required</span></div>
+          </div>
+        </div>
+
+        <div class="terminal-card" aria-label="AI Agent Status Terminal">
+          <div class="terminal-top">
+            <div class="traffic"><span></span><span></span><span></span></div>
+            <div class="terminal-title">AI WORKERS COMMAND CENTER</div>
+          </div>
+          <div class="agent-stack">
+            <div class="agent-line"><div><strong>Research Agent</strong><small>市場・需要・競合を整理</small></div><span class="status wait" data-hero-status="0">standby</span></div>
+            <div class="agent-line"><div><strong>Product Agent</strong><small>商品案・価格・特典を設計</small></div><span class="status wait" data-hero-status="1">standby</span></div>
+            <div class="agent-line"><div><strong>Copy Agent</strong><small>X投稿・note・LP文章を作成</small></div><span class="status wait" data-hero-status="2">standby</span></div>
+            <div class="agent-line"><div><strong>Funnel Agent</strong><small>無料配布・CTA・購入導線を構築</small></div><span class="status wait" data-hero-status="3">standby</span></div>
+            <div class="agent-line"><div><strong>Growth Agent</strong><small>改善案・次の投稿方針を提案</small></div><span class="status wait" data-hero-status="4">standby</span></div>
+          </div>
+          <div class="console" id="heroConsole">system: AI Workers OS boot sequence ready.<span class="cursor"></span></div>
         </div>
       </div>
     </section>
 
-    <section class="wrap section" id="app">
-      <div class="section-title">
-        <h2>AI社員を起動する</h2>
-        <p>入力はざっくりでOKです。β版では、入力内容をもとにビジネス設計・投稿・販売導線を自動生成します。</p>
+    <section class="section" id="agents">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="mini">AI WORKERS</div>
+            <h2>役割を分けるから、<br>ビジネス全体が止まらない。</h2>
+          </div>
+          <p>ただ文章を作るだけではなく、売れる構成・信頼形成・販売導線まで一気通貫で整理するためのAIチーム設計です。</p>
+        </div>
+        <div class="agents">
+          <div class="agent-card"><div class="agent-icon">🔍</div><h3>Research Agent</h3><p>市場の悩み、読者の欲求、競合との差別化ポイントを整理します。</p></div>
+          <div class="agent-card"><div class="agent-icon">🧩</div><h3>Product Agent</h3><p>商品コンセプト、価格、特典、販売形式を作ります。</p></div>
+          <div class="agent-card"><div class="agent-icon">✍️</div><h3>Copy Agent</h3><p>X投稿、note構成、販売ページ文章、見出しを生成します。</p></div>
+          <div class="agent-card"><div class="agent-icon">🛒</div><h3>Funnel Agent</h3><p>無料プレゼント、CTA、登録・購入までの導線を設計します。</p></div>
+          <div class="agent-card"><div class="agent-icon">📈</div><h3>Growth Agent</h3><p>投稿後の改善、次の打ち手、伸ばすべき切り口を提案します。</p></div>
+        </div>
       </div>
+    </section>
 
-      <div class="app-grid">
-        <aside class="panel form-panel">
-          <div class="field">
-            <label for="genre">ジャンル <span>必須</span></label>
-            <input id="genre" type="text" value="AI副業" placeholder="例：AI副業、投資、SNS運用、美容、転職" />
+    <section class="section" id="app">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="mini">FREE DEMO</div>
+            <h2>ジャンルを入力して、<br>AI社員を起動。</h2>
           </div>
-          <div class="field">
-            <label for="target">ターゲット <span>必須</span></label>
-            <input id="target" type="text" value="副業初心者" placeholder="例：会社員、個人事業主、主婦、投資初心者" />
-          </div>
-          <div class="field">
-            <label for="offer">販売したいもの <span>任意</span></label>
-            <input id="offer" type="text" value="note・テンプレ商品" placeholder="例：note、講座、月額コミュニティ、アフィリエイト" />
-          </div>
-          <div class="field">
-            <label for="platform">メインSNS <span>任意</span></label>
-            <select id="platform">
-              <option>X</option>
-              <option>Instagram</option>
-              <option>TikTok</option>
-              <option>Threads</option>
-              <option>note</option>
-              <option>複数SNS</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="tone">文章の雰囲気 <span>任意</span></label>
-            <select id="tone">
-              <option>信頼感・初心者向け</option>
-              <option>高級感・プロ感</option>
-              <option>親しみやすい</option>
-              <option>煽り強め</option>
-              <option>シンプルで上品</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="detail">補足情報 <span>任意</span></label>
-            <textarea id="detail" placeholder="例：無料配布から有料noteへ誘導したい。怪しく見えないようにしたい。"></textarea>
+          <p>まずは無料デモで「商品・投稿・導線」がどう形になるか確認してください。生成結果はそのままコピーできます。</p>
+        </div>
+
+        <div class="app-panel">
+          <div class="glass-card">
+            <div class="form-grid">
+              <div>
+                <label for="genre">ジャンル</label>
+                <input id="genre" value="AI副業" placeholder="例：AI副業、投資、SNS運用、美容、転職、占い、物販" />
+                <div class="quick-tags" data-target="genre">
+                  <button class="tag" type="button">AI副業</button>
+                  <button class="tag" type="button">SNS運用</button>
+                  <button class="tag" type="button">投資初心者向け</button>
+                  <button class="tag" type="button">美容</button>
+                  <button class="tag" type="button">転職</button>
+                </div>
+              </div>
+              <div>
+                <label for="target">ターゲット</label>
+                <input id="target" value="副業を始めたい会社員" placeholder="例：副業初心者、個人事業主、会社員、主婦、学生" />
+                <div class="quick-tags" data-target="target">
+                  <button class="tag" type="button">副業初心者</button>
+                  <button class="tag" type="button">個人事業主</button>
+                  <button class="tag" type="button">会社員</button>
+                  <button class="tag" type="button">主婦</button>
+                </div>
+              </div>
+              <div>
+                <label for="offer">販売したいもの</label>
+                <input id="offer" value="note・テンプレ商品・月額コミュニティ" placeholder="例：note、テンプレ商品、講座、月額コミュニティ、アフィリエイト" />
+              </div>
+              <div>
+                <label for="tone">文章の雰囲気</label>
+                <select id="tone">
+                  <option>信頼感・初心者向け</option>
+                  <option>高級感・プロ感</option>
+                  <option>親しみやすい</option>
+                  <option>煽りすぎないが興味を引く</option>
+                  <option>強めの訴求</option>
+                </select>
+              </div>
+              <div>
+                <label>発信したいSNS</label>
+                <div class="checkbox-grid">
+                  <label class="check-item"><input type="checkbox" value="X" checked /> X</label>
+                  <label class="check-item"><input type="checkbox" value="Threads" /> Threads</label>
+                  <label class="check-item"><input type="checkbox" value="Instagram" /> Instagram</label>
+                  <label class="check-item"><input type="checkbox" value="TikTok" /> TikTok</label>
+                  <label class="check-item"><input type="checkbox" value="note" checked /> note</label>
+                  <label class="check-item"><input type="checkbox" value="GitHubサイト" checked /> GitHubサイト</label>
+                </div>
+              </div>
+              <div>
+                <label for="notes">補足・強み</label>
+                <textarea id="notes" placeholder="例：実績、経験、他と違う点、避けたい表現など">難しい作業をテンプレ化して、初心者でもそのまま使える形にしたい</textarea>
+              </div>
+              <button class="btn primary full" id="generateBtn" type="button">AI社員を起動する</button>
+              <button class="btn full" id="sampleBtn" type="button">別ジャンルのサンプルを入れる</button>
+            </div>
+
+            <div class="history-list" id="historyList" aria-label="生成履歴"></div>
           </div>
 
-          <button class="btn btn-primary full" id="generateBtn">AI社員を起動する</button>
-          <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
-          <div class="system-log" id="systemLog">SYSTEM READY / 入力後に起動できます</div>
-        </aside>
-
-        <section class="panel result-panel" aria-live="polite">
-          <div id="resultArea" class="result-empty">
-            <div>
-              <strong>生成結果はここに表示されます</strong>
-              <p>AI社員を起動すると、商品設計・投稿文・販売導線・30日プランをまとめて出力します。</p>
+          <div class="output-card">
+            <div class="result-head">
+              <h3>生成結果</h3>
+              <button class="btn small" type="button" id="copyAllBtn">全体をコピー</button>
+            </div>
+            <div class="tabs" id="tabs"></div>
+            <div class="output-actions">
+              <button class="btn small" type="button" id="copyTabBtn">表示中をコピー</button>
+              <button class="btn small" type="button" id="downloadBtn">テキスト保存</button>
+              <button class="btn small danger" type="button" id="clearBtn">結果をリセット</button>
+            </div>
+            <div class="result-box" id="resultBox">
+              <div class="empty-state"><div><b>まだ生成されていません</b>左のフォームを入力して「AI社員を起動する」を押してください。</div></div>
             </div>
           </div>
-        </section>
+        </div>
       </div>
     </section>
 
-    <section class="wrap section" id="features">
-      <div class="section-title">
-        <h2>ただの生成ツールで終わらせない</h2>
-        <p>見た瞬間に「次世代っぽい」と思わせるため、AI社員が役割分担して動くUIにしています。</p>
-      </div>
-      <div class="cards3">
-        <div class="panel feature"><div class="num">01</div><h3>AI社員UI</h3><p>市場分析・商品設計・投稿作成・導線設計・改善提案を5人のAI社員として見せます。</p></div>
-        <div class="panel feature"><div class="num">02</div><h3>即コピペ可能</h3><p>生成結果はセクションごとにコピーできます。投稿、LP、CTA、30日プランまで一括出力。</p></div>
-        <div class="panel feature"><div class="num">03</div><h3>収益導線に強い</h3><p>無料デモから有料版、テンプレ販売、月額化、個別構築サポートへ拡張できます。</p></div>
+    <section class="section" id="steps">
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="mini">HOW IT WORKS</div><h2>無料デモから、<br>収益化導線まで。</h2></div>
+          <p>最初は無料で触れるサイトとして反応を集め、その後に完全版・テンプレ販売・月額版へ広げます。</p>
+        </div>
+        <div class="steps">
+          <div class="step-card"><span class="step-no">STEP 01</span><h3>無料デモ</h3><p>SNSで「AI社員を起動できるサイト」として拡散し、触ってもらう。</p></div>
+          <div class="step-card"><span class="step-no">STEP 02</span><h3>登録導線</h3><p>完全版PDF、プロンプト集、テンプレ配布でLINE・メール登録へ誘導。</p></div>
+          <div class="step-card"><span class="step-no">STEP 03</span><h3>有料商品</h3><p>AI社員5人分の完全プロンプト、投稿カレンダー、販売ページテンプレを販売。</p></div>
+          <div class="step-card"><span class="step-no">STEP 04</span><h3>月額化</h3><p>API連携、生成履歴、保存、回数制限、決済を追加してSaaS化。</p></div>
+        </div>
       </div>
     </section>
 
-    <section class="wrap section" id="pricing">
-      <div class="section-title">
-        <h2>将来の料金設計</h2>
-        <p>β版で反応を見てから、API接続・保存機能・ログイン・決済を追加する流れが現実的です。</p>
+    <section class="section" id="pricing">
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="mini">PRICING PLAN</div><h2>販売導線を先に<br>置いておく。</h2></div>
+          <p>今はβ版でも、料金表を置いておくことで「本格サービス感」と「今後の期待値」が出ます。</p>
+        </div>
+        <div class="pricing">
+          <div class="price-card">
+            <div class="price-name">Free β</div>
+            <div class="price">¥0</div>
+            <p>まず触ってもらうための無料デモ。</p>
+            <ul class="features">
+              <li>テンプレート生成</li>
+              <li>商品案・投稿案の作成</li>
+              <li>コピー・保存機能</li>
+              <li>ログイン不要</li>
+            </ul>
+            <a href="#app" class="btn full">無料で試す</a>
+          </div>
+          <div class="price-card featured">
+            <div class="price-name">Starter Kit</div>
+            <div class="price">¥2,980<small>〜</small></div>
+            <p>収益化を始めたい人向けの買い切り完全版。</p>
+            <ul class="features">
+              <li>AI社員5人分の完全プロンプト</li>
+              <li>30日投稿カレンダー</li>
+              <li>販売ページテンプレ</li>
+              <li>無料プレゼント作成テンプレ</li>
+            </ul>
+            <a href="#cta" class="btn primary full">完全版を受け取る</a>
+          </div>
+          <div class="price-card">
+            <div class="price-name">Pro SaaS</div>
+            <div class="price">¥2,980<small>/月〜</small></div>
+            <p>保存・履歴・AI API連携を入れた月額版。</p>
+            <ul class="features">
+              <li>AI生成回数の拡張</li>
+              <li>ユーザー別履歴保存</li>
+              <li>複数プロジェクト管理</li>
+              <li>Stripe決済・ログイン対応</li>
+            </ul>
+            <a href="#faq" class="btn full">構想を見る</a>
+          </div>
+        </div>
       </div>
-      <div class="pricing">
-        <div class="panel price-card">
-          <h3>Free</h3>
-          <p class="mini-note">まず試してもらう入口</p>
-          <div class="price">¥0 <small>/ 月</small></div>
-          <ul><li>月3回生成</li><li>投稿3本まで</li><li>商品案1つ</li><li>一部コピー可能</li></ul>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="mini">FAQ</div><h2>よくある質問</h2></div>
+          <p>公開前に不安を減らすための説明欄です。ユーザーの離脱を防ぎます。</p>
         </div>
-        <div class="panel price-card featured">
-          <h3>Standard</h3>
-          <p class="mini-note">一番売りやすい中心プラン</p>
-          <div class="price">¥2,980 <small>/ 月</small></div>
-          <ul><li>月50回生成</li><li>投稿・note・LP生成</li><li>30日投稿プラン</li><li>保存機能</li></ul>
+        <div class="faq">
+          <details open><summary>このサイトは本当にAIで動いていますか？</summary><p>このβ版はAPIなしのテンプレート生成デモです。見た目・導線・ニーズ確認を優先しています。本格版ではAI APIをサーバー側で接続します。</p></details>
+          <details><summary>無料版と有料版の違いは？</summary><p>無料版は体験用です。有料版では、実際に商品化に使える完全プロンプト、投稿カレンダー、販売ページテンプレ、導線設計シートを提供する想定です。</p></details>
+          <details><summary>投資・金融ジャンルでも使えますか？</summary><p>使えます。ただし、利益保証や断定表現は避け、リスク説明・検証・補助ツールとしての見せ方が必要です。</p></details>
+          <details><summary>本格的な月額サービスにできますか？</summary><p>できます。Next.js、Supabase、Stripe、AI APIを組み合わせることで、ログイン・保存・回数制限・決済まで実装できます。</p></details>
         </div>
-        <div class="panel price-card">
-          <h3>Pro</h3>
-          <p class="mini-note">本気の事業者向け</p>
-          <div class="price">¥9,800 <small>/ 月</small></div>
-          <ul><li>生成回数大幅増</li><li>複数ジャンル管理</li><li>改善分析</li><li>チーム利用</li></ul>
+      </div>
+    </section>
+
+    <section class="section" id="cta">
+      <div class="wrap">
+        <div class="cta-band">
+          <div>
+            <h2>AIを使うだけで終わらせず、<br><span class="glow-text">仕組みにする。</span></h2>
+            <p>まずは無料デモで反応を取り、完全版テンプレ・個別構築サポート・月額版へ広げていきます。</p>
+          </div>
+          <a href="#app" class="btn primary">AI社員を起動する</a>
         </div>
       </div>
     </section>
   </main>
 
   <footer>
-    <div class="wrap">
-      AI WORKERS OS β版 / Demo Site. APIキーは含まれていません。GitHub Pages・Vercel・Netlifyで公開できます。
+    <div class="wrap footer-grid">
+      <div class="logo"><span class="logo-mark"></span><span>AI WORKERS OS</span></div>
+      <div>© 2026 AI WORKERS OS. Built for solo business operators.</div>
     </div>
   </footer>
 
   <div class="toast" id="toast">コピーしました</div>
 
   <script>
-    const agents = [
-      { key: "research", name: "Research Agent", active: "市場を分析中...", done: "分析完了" },
-      { key: "product", name: "Product Agent", active: "商品を設計中...", done: "設計完了" },
-      { key: "copy", name: "Copy Agent", active: "投稿文を生成中...", done: "生成完了" },
-      { key: "funnel", name: "Funnel Agent", active: "導線を構築中...", done: "構築完了" },
-      { key: "growth", name: "Growth Agent", active: "改善案を検出中...", done: "検出完了" }
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+    const state = {
+      result: null,
+      activeTab: 'summary',
+      history: JSON.parse(localStorage.getItem('aiWorkersHistory') || '[]')
+    };
+
+    const tabNames = {
+      summary: '全体設計',
+      product: '商品設計',
+      posts: 'SNS投稿',
+      note: 'note構成',
+      lp: '販売ページ',
+      funnel: '導線/CTA',
+      calendar: '30日プラン',
+      improve: '改善案'
+    };
+
+    const sampleSets = [
+      { genre: 'AI副業', target: '副業を始めたい会社員', offer: 'note・テンプレ商品・月額コミュニティ', tone: '信頼感・初心者向け', notes: '難しい作業をテンプレ化して、初心者でもそのまま使える形にしたい' },
+      { genre: 'SNS運用', target: '個人事業主・小規模店舗', offer: '投稿代行パック・月額サポート', tone: '高級感・プロ感', notes: 'ただ投稿するだけでなく、集客から問い合わせまでの導線を設計する' },
+      { genre: '投資初心者向け', target: 'これから投資を勉強したい人', offer: '学習note・検証シート・コミュニティ', tone: '煽りすぎないが興味を引く', notes: '利益保証はせず、リスク管理と学習支援を中心に見せたい' },
+      { genre: '美容サロン集客', target: '地域の個人サロンオーナー', offer: 'Instagram導線設計・投稿テンプレ', tone: '親しみやすい', notes: '予約につながるプロフィール、投稿、ハイライト構成まで作りたい' }
     ];
 
-    const generateBtn = document.getElementById("generateBtn");
-    const progressBar = document.getElementById("progressBar");
-    const systemLog = document.getElementById("systemLog");
-    const resultArea = document.getElementById("resultArea");
-    const toast = document.getElementById("toast");
+    const toneGuide = {
+      '信頼感・初心者向け': '専門用語を避け、安心感・手順・再現性を重視する。',
+      '高級感・プロ感': '余白のある表現、断定しすぎない専門性、洗練された言葉を使う。',
+      '親しみやすい': '日常的な言葉で、距離が近く相談しやすい雰囲気にする。',
+      '煽りすぎないが興味を引く': '問題提起は強め、約束は控えめ、信頼を崩さない。',
+      '強めの訴求': '現状の損失・機会損失を見せ、すぐ行動する理由を作る。'
+    };
 
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function escapeText(v) {
+      return String(v || '').replace(/[<>]/g, (s) => s === '<' ? '＜' : '＞').trim();
     }
 
-    function getValue(id, fallback) {
-      const value = document.getElementById(id).value.trim();
-      return value || fallback;
+    function getInputs() {
+      const sns = $$('input[type="checkbox"]:checked').map(i => i.value);
+      return {
+        genre: escapeText($('#genre').value) || 'AI副業',
+        target: escapeText($('#target').value) || '副業初心者',
+        offer: escapeText($('#offer').value) || 'テンプレ商品',
+        tone: $('#tone').value,
+        sns,
+        notes: escapeText($('#notes').value) || '初心者でも使いやすい形にする'
+      };
     }
 
-    function showToast(message = "コピーしました") {
-      toast.textContent = message;
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 1600);
+    function buildResult(input) {
+      const snsText = input.sns.length ? input.sns.join(' / ') : 'X / note';
+      const productBase = input.genre.replace(/向け/g, '').replace(/初心者/g, '').trim() || input.genre;
+      const productNames = [
+        `${productBase} WORKERS KIT`,
+        `${productBase} 収益化スターターOS`,
+        `${productBase} AI導線テンプレート`,
+        `${productBase} SOLO BUSINESS PACK`,
+        `${productBase} 30日実践キット`
+      ];
+
+      const summary = `【AI WORKERS OS 生成結果】\n\nジャンル：${input.genre}\nターゲット：${input.target}\n販売したいもの：${input.offer}\n発信SNS：${snsText}\nトーン：${input.tone}\n補足：${input.notes}\n\n■ コンセプト\n${input.target}が、${input.genre}で迷わず最初の一歩を踏み出せるように、商品設計・投稿・販売導線をテンプレート化する。\n\n■ 一番強い訴求\n「ゼロから考えなくていい。型に沿って入力するだけで、発信・商品・導線が整う。」\n\n■ 売り方の軸\n1. 無料で価値を見せる\n2. テンプレで時短価値を伝える\n3. 完全版で実行量を増やす\n4. 月額または個別サポートで継続収益化する\n\n■ 表現方針\n${toneGuide[input.tone] || toneGuide['信頼感・初心者向け']}`;
+
+      const product = `【商品設計】\n\n■ 商品名候補\n${productNames.map((name, i) => `${i + 1}. ${name}`).join('\n')}\n\n■ おすすめ商品名\n${productNames[1]}\n\n■ 商品コンセプト\n${input.target}向けに、${input.genre}で必要な「投稿・商品設計・販売ページ・CTA・30日行動計画」をまとめた実践キット。\n\n■ 中身\n・初回投稿テンプレ30本\n・商品コンセプト設計シート\n・販売ページ文章テンプレ\n・無料プレゼント案10個\n・登録/購入につなげるCTA集\n・30日投稿カレンダー\n・改善チェックリスト\n\n■ 価格設計\n・β価格：980円〜2,980円\n・通常価格：4,980円〜9,800円\n・上位版：29,800円〜98,000円\n・月額版：980円〜2,980円/月\n\n■ 売れる見せ方\n「情報」ではなく「作業時間を減らす仕組み」として販売する。\n\n■ 注意点\n成果を保証せず、あくまで作業効率化・設計補助として見せる。`;
+
+      const posts = `【SNS投稿案】\n\n投稿1：問題提起\n【${input.genre}、最初に詰まるのは才能じゃない】\n\n多くの人が止まるのは、\n何を投稿するか、何を売るか、どう導線を作るかが決まっていないから。\n\nでもここは、毎回ゼロから考えなくていい。\n\n型を作れば、\n・投稿\n・商品\n・無料配布\n・販売ページ\n・CTA\nまで一気に整う。\n\n${input.target}ほど、まず必要なのは根性より「仕組み」。\n\n\n投稿2：チェックリスト\n【${input.genre}で発信する前に決めること】\n\n・誰に向けるか\n・何の悩みを解決するか\n・無料で何を見せるか\n・どこで信頼を作るか\n・何を販売するか\n・購入前の不安をどう消すか\n\nここを決めずに投稿しても、\n反応は出ても売上につながりにくい。\n\n発信は投稿文だけじゃなく、導線までセットで考える。\n\n\n投稿3：AI切り口\n【AIは文章を書く道具で終わらせるともったいない】\n\n本当に強い使い方は、\nAIを作業ごとに分けること。\n\n調査AI\n商品設計AI\n投稿AI\n販売ページAI\n改善AI\n\nこの5つに分けると、\nひとりでもビジネス全体を組みやすくなる。\n\nAIに聞く人より、AIを働かせる人が強くなる。\n\n\n投稿4：販売導線\n【売れない原因、商品じゃなくて導線かもしれない】\n\nいい商品でも、\n\n投稿 → 信頼 → 無料配布 → 販売ページ → CTA\n\nこの流れが弱いと売れにくい。\n\n特に${input.target}向けなら、\n「なぜ必要か」\n「何が得られるか」\n「次に何をすればいいか」\nをはっきり見せることが大事。\n\n\n投稿5：CTA\n${input.genre}で発信や商品作りを始めたい人向けに、\n投稿・商品設計・販売導線をまとめて作れる無料デモを用意しました。\n\nまずは触ってみてください。\nゼロから考えるより、かなり早く形になります。`;
+
+      const note = `【note記事構成】\n\nタイトル案：\n${input.genre}で稼ぐ前に作るべき「売れる仕組み」の作り方\n\n導入：\n${input.genre}を始めたい人は増えています。\nでも、多くの人は投稿や商品作りの前に止まります。\n理由はシンプルで、何をどの順番で作ればいいか分からないからです。\n\n見出し1：なぜ投稿だけでは売れないのか\n・反応と購入は別\n・信頼がないとCTAが刺さらない\n・導線がないと見込み客が流れる\n\n見出し2：最初に決めるべき3つ\n・誰に向けるか\n・何を解決するか\n・何を販売するか\n\n見出し3：無料プレゼントの作り方\n・チェックリスト\n・テンプレート\n・診断シート\n・ミニ講座\n\n見出し4：販売ページに必要な要素\n・問題提起\n・理想の未来\n・中身\n・向いている人\n・価格\n・よくある不安\n・CTA\n\n見出し5：AIを使って仕組み化する\n・市場分析\n・投稿作成\n・商品設計\n・改善案\n\n締め：\n${input.genre}は、センスだけで勝つものではありません。\n型を作り、改善し続けることで、少しずつ反応と信頼が積み上がります。`;
+
+      const lp = `【販売ページ文章】\n\n# ${productNames[1]}\n\n## ${input.target}のための、${input.genre}収益化スターターキット\n\n何を投稿すればいいか分からない。\nどんな商品を作ればいいか分からない。\n販売ページやCTAまで考えるのが大変。\n\nそんな状態から抜け出すために、${input.genre}に必要な型をまとめました。\n\nこのキットでは、投稿・商品設計・無料プレゼント・販売ページ・30日行動計画まで、すぐ使える形で整理できます。\n\n## こんな人におすすめ\n・${input.genre}を始めたい\n・SNSから商品販売につなげたい\n・投稿ネタに困っている\n・noteやテンプレ商品を販売したい\n・導線設計が苦手\n・AIを使って作業時間を減らしたい\n\n## 内容\n・商品設計シート\n・SNS投稿テンプレ\n・note記事構成テンプレ\n・販売ページテンプレ\n・CTA文テンプレ\n・無料プレゼント案\n・30日投稿カレンダー\n\n## 価格\nβ価格：2,980円\n通常価格：9,800円\n\n## CTA\nゼロから悩む時間を減らして、まずは形にしてください。\n${input.genre}を始めるなら、最初に必要なのは完璧な才能ではなく、迷わず動ける設計図です。`;
+
+      const funnel = `【販売導線 / CTA】\n\n■ 無料導線\nSNS投稿\n↓\n無料デモサイト\n↓\n生成結果を体験\n↓\n「完全版テンプレを受け取る」\n↓\nnote / LINE / メール登録\n↓\n有料版販売\n\n■ 無料プレゼント案\n1. ${input.genre}収益化チェックリスト\n2. 初回投稿テンプレ10本\n3. 商品設計ワークシート\n4. 販売ページ見出しテンプレ\n5. CTA例文集\n\n■ CTA文\n・まずは無料でAI社員を起動する\n・あなたのジャンルで商品設計を作る\n・完全版テンプレを受け取る\n・30日分の投稿設計を作る\n・ゼロから考える時間を減らす\n\n■ 購入前の不安を消す文\nこの商品は、成果を保証するものではありません。\nただし、${input.genre}で発信・商品作成・販売導線を作るための作業時間を大きく減らせるように設計しています。`;
+
+      const calendar = `【30日投稿プラン】\n\n1日目：${input.genre}で多い悩み\n2日目：初心者が止まりやすい理由\n3日目：チェックリスト投稿\n4日目：無料デモ紹介\n5日目：よくある勘違い\n6日目：成功より先に整えるべきこと\n7日目：1週間のまとめ\n8日目：商品設計の考え方\n9日目：ターゲット設定の重要性\n10日目：無料プレゼント案\n11日目：販売ページの型\n12日目：CTA改善\n13日目：AI活用例\n14日目：無料デモ再紹介\n15日目：購入前の不安を解消\n16日目：実際の生成例を見せる\n17日目：テンプレの中身紹介\n18日目：導線マップ公開\n19日目：よくある質問\n20日目：β価格の案内\n21日目：利用シーン紹介\n22日目：投稿ネタの作り方\n23日目：note構成の作り方\n24日目：販売文の作り方\n25日目：改善チェックリスト\n26日目：上位版の案内\n27日目：導入事例風投稿\n28日目：無料デモ再案内\n29日目：締切/値上げ予告\n30日目：販売まとめ投稿`;
+
+      const improve = `【改善アドバイス】\n\n■ 最初に見る指標\n・サイトクリック数\n・生成ボタンのクリック率\n・結果コピー率\n・完全版CTAクリック率\n・SNS投稿の保存率\n\n■ 反応が弱い場合\n1. ジャンルを広げすぎない\n2. ターゲットをもっと具体化する\n3. 「何が作れるか」を画像で見せる\n4. 無料デモの結果例をSNSに載せる\n5. 商品名をもっと分かりやすくする\n\n■ 売上につなげる改善\n・無料デモの最後に有料版CTAを置く\n・完全版の中身を画像で見せる\n・β価格と通常価格を明確にする\n・購入後すぐ使えることを強調する\n・成果保証ではなく、時短と設計補助として訴求する\n\n■ 次の開発優先順位\n1. 生成結果の精度アップ\n2. 完全版販売ページ作成\n3. LINE/メール登録導線\n4. AI API接続\n5. ログイン・保存・月額課金`;
+
+      return { summary, product, posts, note, lp, funnel, calendar, improve };
     }
 
-    async function copyText(text) {
+    function renderTabs() {
+      const tabs = $('#tabs');
+      tabs.innerHTML = Object.entries(tabNames).map(([key, name]) => `<button type="button" class="tab ${state.activeTab === key ? 'active' : ''}" data-tab="${key}">${name}</button>`).join('');
+      $$('.tab').forEach(tab => tab.addEventListener('click', () => {
+        state.activeTab = tab.dataset.tab;
+        renderTabs();
+        renderResult();
+      }));
+    }
+
+    function renderResult() {
+      const box = $('#resultBox');
+      if (!state.result) {
+        box.innerHTML = '<div class="empty-state"><div><b>まだ生成されていません</b>左のフォームを入力して「AI社員を起動する」を押してください。</div></div>';
+        return;
+      }
+      box.textContent = state.result[state.activeTab] || '';
+    }
+
+    function setHeroStatus(activeIndex = -1) {
+      $$('[data-hero-status]').forEach((el, i) => {
+        el.classList.remove('wait', 'run');
+        if (i === activeIndex) { el.classList.add('run'); el.textContent = 'running'; }
+        else if (activeIndex > i) { el.textContent = 'complete'; }
+        else { el.classList.add('wait'); el.textContent = 'standby'; }
+      });
+    }
+
+    function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+    async function runAnimation(input) {
+      const logs = [
+        `input: ${input.genre} / ${input.target}`,
+        'Research Agent: 市場と悩みを解析中...',
+        'Product Agent: 商品構成と価格を設計中...',
+        'Copy Agent: SNS投稿とnote構成を生成中...',
+        'Funnel Agent: CTAと販売導線を構築中...',
+        'Growth Agent: 改善ポイントを検出中...',
+        'complete: AI Workers output generated.'
+      ];
+      $('#heroConsole').innerHTML = 'system: booting AI workers...<span class="cursor"></span>';
+      for (let i = 0; i < 5; i++) {
+        setHeroStatus(i);
+        $('#heroConsole').innerHTML = logs.slice(0, i + 2).join('<br>') + '<span class="cursor"></span>';
+        await sleep(420);
+      }
+      setHeroStatus(99);
+      $('#heroConsole').innerHTML = logs.join('<br>') + '<span class="cursor"></span>';
+    }
+
+    async function generate() {
+      const btn = $('#generateBtn');
+      const input = getInputs();
+      btn.disabled = true;
+      btn.textContent = 'AI社員が作業中...';
+      await runAnimation(input);
+      state.result = buildResult(input);
+      state.activeTab = 'summary';
+      state.history.unshift({ time: new Date().toLocaleString('ja-JP'), title: input.genre, target: input.target, result: state.result });
+      state.history = state.history.slice(0, 5);
+      localStorage.setItem('aiWorkersHistory', JSON.stringify(state.history));
+      renderTabs();
+      renderResult();
+      renderHistory();
+      btn.disabled = false;
+      btn.textContent = 'AI社員を起動する';
+      showToast('生成しました');
+    }
+
+    function renderHistory() {
+      const list = $('#historyList');
+      if (!state.history.length) { list.innerHTML = ''; return; }
+      list.innerHTML = '<div class="mini">Recent Outputs</div>' + state.history.map((h, i) => `<div class="history-item"><div><b>${h.title}</b>${h.target}<br>${h.time}</div><button class="btn small" type="button" data-history="${i}">開く</button></div>`).join('');
+      $$('[data-history]').forEach(btn => btn.addEventListener('click', () => {
+        const item = state.history[Number(btn.dataset.history)];
+        if (!item) return;
+        state.result = item.result;
+        state.activeTab = 'summary';
+        renderTabs();
+        renderResult();
+        showToast('履歴を開きました');
+      }));
+    }
+
+    function getAllText() {
+      if (!state.result) return '';
+      return Object.entries(tabNames).map(([key, name]) => `\n========== ${name} ==========\n\n${state.result[key] || ''}`).join('\n');
+    }
+
+    async function copyText(text, message = 'コピーしました') {
+      if (!text) { showToast('コピーする内容がありません'); return; }
       try {
         await navigator.clipboard.writeText(text);
-        showToast("コピーしました");
+        showToast(message);
       } catch (e) {
-        const textarea = document.createElement("textarea");
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        textarea.remove();
-        showToast("コピーしました");
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        showToast(message);
       }
     }
 
-    function buildProductName(genre) {
-      const clean = genre.replace(/\s+/g, "");
-      return [
-        `${clean}スターターOS`,
-        `${clean}収益化キット`,
-        `${clean}AI実践パック`,
-        `${clean}ロードマップ30`,
-        `${clean}テンプレートLab`
-      ];
-    }
-
-    function toneLine(tone) {
-      if (tone.includes("高級")) return "専門性と信頼感を強め、安売りに見えない表現で統一する。";
-      if (tone.includes("煽り")) return "興味を強く引きつつ、断定や過度な誇張は避けて期待値を調整する。";
-      if (tone.includes("親し")) return "難しい言葉を避け、身近な悩みから入って共感を作る。";
-      if (tone.includes("上品")) return "余計な装飾を減らし、短く洗練された言葉で伝える。";
-      return "初心者にも伝わる言葉で、不安を減らしながら信頼を積み上げる。";
-    }
-
-    function generateContent(data) {
-      const names = buildProductName(data.genre);
-      const toneAdvice = toneLine(data.tone);
-      const offer = data.offer || "デジタル商品";
-      const detail = data.detail ? `\n補足方針：${data.detail}` : "";
-
-      const concept = `${data.genre}に興味がある${data.target}向けに、最初の一歩を迷わず進められる実践型パッケージを作る。\n\n狙いは「知識を売る」ではなく、「すぐ使える型」を売ること。\n無料コンテンツで信頼を作り、有料版ではテンプレ・手順・投稿例・導線設計までまとめて提供する。\n\n販売形式：${offer}\nメインSNS：${data.platform}\n表現方針：${toneAdvice}${detail}`;
-
-      const pricing = `入口商品：980円〜2,980円\n本命商品：9,800円〜29,800円\n上位商品：49,800円〜198,000円\n\n最初は低価格で実績と反応を取り、購入者の声・使用例・改善ログを集める。\n反応が取れたら、テンプレ追加・個別添削・月額サポートに展開する。`;
-
-      const freeGift = `無料プレゼント案：\n・${data.genre}で最初にやるべき10ステップPDF\n・${data.target}向けチェックリスト\n・投稿ネタ30個リスト\n・売れる商品設計シート\n・失敗しやすいポイントまとめ\n\n無料配布の最後に「完成テンプレを使いたい人向けに有料版を用意しています」と自然に誘導する。`;
-
-      const posts = `【${data.genre}で止まる人の共通点】\n\n多くの人は、やる気がないわけではありません。\n止まる理由は「何から始めればいいか」が決まっていないからです。\n\n・投稿ネタがない\n・商品案がない\n・導線がない\n・何を売ればいいか分からない\n\nここが整理できるだけで、行動はかなり楽になります。\nまずは完璧な商品より、売れる流れを作ることが先です。\n\n---\n\n【${data.target}こそ、テンプレを使った方がいい】\n\nゼロから考えると時間がかかります。\nでも、型があれば一気に進みます。\n\n${data.genre}で大事なのは、才能よりも順番。\n\n1. 悩みを決める\n2. 解決策を作る\n3. 無料で信頼を作る\n4. 有料版に誘導する\n5. 反応を見て改善する\n\nこの流れを作るだけで、かなり見え方が変わります。\n\n---\n\n【${data.genre}は、情報より“使える形”が売れやすい】\n\nただノウハウを並べても、読者は動けません。\n\n本当に求められているのは、\n・そのまま使えるテンプレ\n・失敗しにくい手順\n・真似できる投稿例\n・購入までの導線\n\n知識ではなく、行動できる形にして渡す。\nこれが商品化のコツです。`;
-
-      const note = `note記事構成：\n\nタイトル案：\n${data.target}が${data.genre}で最初に迷わないための実践ロードマップ\n\n構成：\n1. なぜ多くの人が途中で止まるのか\n2. ${data.genre}で最初に決めるべきこと\n3. 売れるテーマの見つけ方\n4. 無料発信から有料商品につなげる流れ\n5. 投稿ネタの作り方\n6. 販売ページに必要な要素\n7. 今日から使えるチェックリスト\n8. 完成テンプレの案内`;
-
-      const lp = `販売ページ文章：\n\n${data.genre}を始めたいけど、何から作ればいいか分からない${data.target}へ。\n\nこの商品では、投稿・商品設計・販売ページ・無料配布・導線作成まで、すぐ使える形でまとめています。\n\nゼロから考える必要はありません。\nあなたのジャンルに当てはめて、順番に進めるだけでOKです。\n\n一番大変なのは、才能ではなく「最初の型」がないことです。\n\nこのキットは、${data.genre}で最初の一歩を具体化するための実践セットです。`;
-
-      const cta = `CTA案：\n\nまずは無料チェックリストから受け取ってください。\n内容を見て「自分にも使えそう」と思った人だけ、有料版を検討すればOKです。\n\n強めのCTA：\n考えて止まる時間を減らして、今日から形にしてください。\nテンプレを使えば、最初の一歩はかなり楽になります。\n\n上品なCTA：\nまずは無料版で全体像を確認してください。\n必要な方だけ、完成テンプレ版をご利用ください。`;
-
-      const plan = Array.from({ length: 30 }, (_, i) => {
-        const day = i + 1;
-        const themes = [
-          "悩みの共感投稿", "よくある失敗", "チェックリスト", "成功までの順番", "無料配布の案内",
-          "商品コンセプト紹介", "お客様目線の不安解消", "ビフォーアフター", "よくある質問", "CTA投稿"
-        ];
-        return `Day ${String(day).padStart(2, "0")}: ${themes[i % themes.length]}`;
-      }).join("\n");
-
-      const improvement = `改善アドバイス：\n・最初は商品を作り込みすぎず、無料配布への反応を見る\n・反応がよい投稿テーマを有料商品の見出しに使う\n・価格は最初から高額にせず、入口商品→本命商品→上位商品の順で作る\n・「稼げる」よりも「迷わず始められる」「作業時間を減らせる」を前面に出す\n・購入前の不安を減らすために、中身の一部を画像やサンプルで見せる`;
-
-      return [
-        { title: "商品コンセプト", body: concept },
-        { title: "商品名候補", body: names.map((n, i) => `${i + 1}. ${n}`).join("\n") },
-        { title: "価格設定", body: pricing },
-        { title: "無料プレゼント案", body: freeGift },
-        { title: `${data.platform}投稿3本`, body: posts },
-        { title: "note記事構成", body: note },
-        { title: "販売ページ文章", body: lp },
-        { title: "CTA文", body: cta },
-        { title: "30日投稿プラン", body: plan },
-        { title: "改善アドバイス", body: improvement }
-      ];
-    }
-
-    function renderResult(blocks) {
-      const allText = blocks.map(block => `【${block.title}】\n${block.body}`).join("\n\n");
-      resultArea.className = "";
-      resultArea.innerHTML = `
-        <div class="result-actions">
-          <button class="btn btn-primary" id="copyAllBtn">全体をコピー</button>
-          <button class="btn btn-ghost" id="downloadBtn">テキスト保存</button>
-          <button class="btn btn-ghost" id="resetBtn">もう一度生成</button>
-        </div>
-        ${blocks.map((block, index) => `
-          <article class="output-block">
-            <div class="output-head">
-              <h3>${escapeHtml(block.title)}</h3>
-              <button class="copy-small" data-copy-index="${index}">コピー</button>
-            </div>
-            <div class="output-content">${escapeHtml(block.body)}</div>
-          </article>
-        `).join("")}
-      `;
-
-      document.getElementById("copyAllBtn").addEventListener("click", () => copyText(allText));
-      document.getElementById("downloadBtn").addEventListener("click", () => downloadText(allText));
-      document.getElementById("resetBtn").addEventListener("click", () => runGeneration());
-      resultArea.querySelectorAll("[data-copy-index]").forEach(btn => {
-        btn.addEventListener("click", () => copyText(blocks[Number(btn.dataset.copyIndex)].body));
-      });
-    }
-
-    function downloadText(text) {
-      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    function downloadText() {
+      const text = getAllText();
+      if (!text) { showToast('保存する内容がありません'); return; }
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
+      const a = document.createElement('a');
       a.href = url;
-      a.download = "ai-workers-os-result.txt";
-      document.body.appendChild(a);
+      a.download = 'ai-workers-output.txt';
       a.click();
-      a.remove();
       URL.revokeObjectURL(url);
-      showToast("テキストを保存しました");
+      showToast('テキストを保存しました');
     }
 
-    function resetAgentCards() {
-      document.querySelectorAll(".agent-card").forEach(card => {
-        card.classList.remove("active", "done");
-        const status = card.querySelector(".agent-status");
-        if (status) status.textContent = "待機中";
+    function showToast(text) {
+      const toast = $('#toast');
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    function init() {
+      renderTabs();
+      renderHistory();
+      $('#generateBtn').addEventListener('click', generate);
+      $('#copyAllBtn').addEventListener('click', () => copyText(getAllText(), '全体をコピーしました'));
+      $('#copyTabBtn').addEventListener('click', () => copyText(state.result ? state.result[state.activeTab] : '', '表示中をコピーしました'));
+      $('#downloadBtn').addEventListener('click', downloadText);
+      $('#clearBtn').addEventListener('click', () => {
+        state.result = null;
+        renderResult();
+        showToast('リセットしました');
       });
-    }
-
-    function updateAgent(index, state) {
-      const cards = document.querySelectorAll("#heroAgents .agent-card");
-      const card = cards[index];
-      if (!card) return;
-      const status = card.querySelector(".agent-status");
-      card.classList.remove("active", "done");
-      if (state === "active") {
-        card.classList.add("active");
-        status.textContent = "処理中";
-      }
-      if (state === "done") {
-        card.classList.add("done");
-        status.textContent = "完了";
-      }
-    }
-
-    function runGeneration() {
-      const data = {
-        genre: getValue("genre", "AI副業"),
-        target: getValue("target", "副業初心者"),
-        offer: getValue("offer", "note・テンプレ商品"),
-        platform: getValue("platform", "X"),
-        tone: getValue("tone", "信頼感・初心者向け"),
-        detail: getValue("detail", "")
-      };
-
-      generateBtn.disabled = true;
-      generateBtn.textContent = "AI社員が作業中...";
-      progressBar.style.width = "0%";
-      systemLog.textContent = "SYSTEM BOOTING / AI社員を起動しています";
-      resetAgentCards();
-      resultArea.className = "result-empty";
-      resultArea.innerHTML = `<div><strong>AI社員が作業中です</strong><p>市場分析・商品設計・投稿作成・導線構築を順番に実行しています。</p></div>`;
-
-      let step = 0;
-      const timer = setInterval(() => {
-        if (step > 0) updateAgent(step - 1, "done");
-        if (step < agents.length) {
-          updateAgent(step, "active");
-          systemLog.textContent = `${agents[step].name} / ${agents[step].active}`;
-          progressBar.style.width = `${(step / agents.length) * 88 + 12}%`;
-          step++;
-        } else {
-          clearInterval(timer);
-          progressBar.style.width = "100%";
-          systemLog.textContent = "OUTPUT READY / 生成が完了しました";
-          generateBtn.disabled = false;
-          generateBtn.textContent = "AI社員を起動する";
-          renderResult(generateContent(data));
-          document.querySelector("#app").scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      }, 560);
-    }
-
-    generateBtn.addEventListener("click", runGeneration);
-
-    // Heroのステータスを自動で巡回させ、動いている印象を作る
-    let heroIndex = 0;
-    setInterval(() => {
-      const cards = document.querySelectorAll("#heroAgents .agent-card");
-      cards.forEach((card, index) => {
-        card.classList.remove("active", "done");
-        const status = card.querySelector(".agent-status");
-        if (index < heroIndex) {
-          card.classList.add("done");
-          status.textContent = "完了";
-        } else if (index === heroIndex) {
-          card.classList.add("active");
-          status.textContent = "分析中";
-        } else {
-          status.textContent = "待機中";
-        }
+      $('#sampleBtn').addEventListener('click', () => {
+        const s = sampleSets[Math.floor(Math.random() * sampleSets.length)];
+        $('#genre').value = s.genre;
+        $('#target').value = s.target;
+        $('#offer').value = s.offer;
+        $('#tone').value = s.tone;
+        $('#notes').value = s.notes;
+        showToast('サンプルを入力しました');
       });
-      heroIndex = (heroIndex + 1) % 5;
-    }, 1600);
+      $$('.quick-tags').forEach(group => {
+        group.querySelectorAll('.tag').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const target = $('#' + group.dataset.target);
+            target.value = btn.textContent.trim();
+          });
+        });
+      });
+      let demo = 0;
+      setInterval(() => {
+        setHeroStatus(demo % 5);
+        demo++;
+      }, 1600);
+    }
+
+    init();
   </script>
 </body>
 </html>
